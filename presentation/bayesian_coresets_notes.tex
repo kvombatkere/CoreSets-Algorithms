@@ -1,0 +1,63 @@
+\documentclass[12pt]{amsart}
+\RequirePackage[l2tabu, orthodox]{nag}
+\usepackage[main=english]{babel}
+\usepackage[rm={lining,tabular},sf={lining,tabular},tt={lining,tabular,monowidth}]{cfr-lm}
+\usepackage{amsthm,amssymb,latexsym,gensymb,mathtools,mathrsfs,bbm}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{epstopdf,enumitem,microtype,dcolumn,booktabs,hyperref,url,fancyhdr}
+\usepackage[margin=2.7182818284590452353602874713526624977572470936999cm]{geometry}
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+
+% Plotting
+\usepackage{pgfplots}
+\usepackage{xinttools} % for the \xintFor***
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=newest}
+\usepackage{tikz}
+
+% For embedding images
+\graphicspath{ {./images/} }
+
+% Custom Commands
+\newcommand*{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand*{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand*{\suchthat}{\,\mathrel{\big|}\,}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Prob}{\mathbb{P}}
+\DeclarePairedDelimiterX\innerp[2]{(}{)}{#1\delimsize\vert\mathopen{}#2}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\esssup}{ess \ sup}
+\newcommand*{\dual}[2]{\left\langle#1,#2\right\rangle}
+\DeclareMathOperator{\sgn}{sgn}
+
+% Formatting definitions, propositions, etc.
+\theoremstyle{plain} 
+\newtheorem{definition}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{thm}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\setlist{topsep=1ex,parsep=1ex,itemsep=0ex}
+\setlist[1]{leftmargin=\parindent}
+\setlist[enumerate,1]{label=\arabic*.,ref=\arabic*}
+\setlist[enumerate,2]{label=(\alph*),ref=(\alph*)}
+\begin{document}
+
+\begin{center}
+Andrew Roberts \\
+Algorithmic Techniques for Taming Big Data \\
+Bayesian Coresets Notes for Final Project
+\end{center}
+\smallskip
+
+
+\end{document} 
+
