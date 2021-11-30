@@ -58,6 +58,37 @@ Bayesian Coresets Notes for Final Project
 \end{center}
 \smallskip
 
+\section{Plan/To-Do List}
+\subsection{Implement the tests in the paper on posterior inference for unknown mean $N(\mu, I)$}
+
+
+
+
+\section{Bayesian Regression}
+Resource: https://statswithr.github.io/book/introduction-to-bayesian-regression.html
+
+\subsection{Setup}
+\subsection{Likelihood}
+\subsection{Priors}
+
+\section{Hilbert Coresets Code}
+Code from paper: https://github.com/trevorcampbell/bayesian-coresets
+
+\subsection{Required Inputs}
+\begin{itemize} 
+\item The data point log-likelihoods: $\mathcal{L}_i := \log L(\theta; y_i) = \log p(y_i|\theta)$
+\item $M = $ coreset size (set this based on theoretical guarantees)
+\item Weight function $\hat{\pi}$
+\item Random projection parameter $J$
+\end{itemize} 
+
+\subsection{Functions/Sub-Routines}
+\begin{itemize} 
+\item Function to simulate dataset $(y, X)$ (question: how to simulate $X$? Reasonable to add some feature correlation) 
+\item 
+\end{itemize} 
+
+
 
 \end{document} 
 
