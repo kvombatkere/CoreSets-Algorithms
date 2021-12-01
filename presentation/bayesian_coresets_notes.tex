@@ -61,7 +61,21 @@ Bayesian Coresets Notes for Final Project
 \section{Plan/To-Do List}
 \subsection{Implement the tests in the paper on posterior inference for unknown mean $N(\mu, I)$}
 
+\section{Estimation of MVN Mean with Known Covariance}
+For data $y = (y_1, \dots, y_N)$ with $y_i \in \mathbb{R}^2$ we assume the following model: 
+\[(y_1|\theta), \dots, (y_N|\theta) \text{ are iid with } y_i|\theta \sim N_2(\theta, I_2)\]
+The covariance matrix $I_2$ is assumed to be known. We also assume a prior distribution on the mean vector: 
+\[\theta \sim N_2(\mu_0, I_2)\]
+It is known that this likelihood, prior combination form a conjugate pair with posterior: 
+\[\theta|y \sim N_2(\mu, \Sigma)\]
+where 
+\begin{align*} 
+&\Sigma = \frac{1}{1 + N}I && \mu = \Sigma\left(\mu_0 + \sum_{i = 1}^{N} y_i\right) = \frac{\mu_0}{1 + N} + \frac{S_N}{1 + N}
+\end{align*} 
 
+I emphasize that inference is only being done on the mean vector, with the underlying covariance matrix $I_2$ fixed. $\Sigma$ is the covariance
+matrix of the posterior distribution for the mean vector. Since this posterior is known in closed form, we can easily test the quality of the coreset posterior approximation
+against the true posterior. 
 
 
 \section{Bayesian Regression}
