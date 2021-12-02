@@ -22,10 +22,11 @@ class Coreset_GMM:
 		return min([self.dist(x, y) for y in Y])
 
 	# Plot points if x_array has dimension 1 or 2
-	# arr = None means default to plotting self.x_array
+	# arr = None means default to plotting self.x_array.
+	# ax = None means create new axis, otherwise adds to existing one
 	def scatter_2D(self, arr = None, ax = None):
 		if self.d > 2: 
-			warnings.warn('Cannot plot data of dimension > 2')
+			warnings.warn("Cannot plot data of dimension > 2")
 		else: 	
 			if arr is None:
 				arr = self.x_array
@@ -56,7 +57,22 @@ class Coreset_GMM:
 			probs = dists_to_B / np.sum(dists_to_B)
 			B[j] = self.rng.choice(self.x_array, p = probs)
 			
-		return B
+		return (B, np.sum([self.dist_set(x, B)**2 for x in B]))
+
+	# Runs kmeans++ specified number of times, then returns the best set of initial values for the k means
+	# in the sense that minimizes squared pairwise distances. 
+	def get_bicriteria_kmeans_approx(self, N = None):
+		if N is None:
+			N = int(np.ceil(np.log2(1 / self.delta)))
+			print("Running ", N, " iterations of kmeans++")
+		else:
+			warnings.warn("Using manually set number of runs for kmeans initialization algorithm; theoretical bounds not guaranteed.")
+
+		k_means_init = [self.kmeans_pp() for i in range(N)]
+		argmin = np.argmin([b[1] for b in k_means_init])
+
+		return k_means_init[argmin][0]
+
 
 				
 			

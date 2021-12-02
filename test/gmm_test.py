@@ -127,12 +127,15 @@ arr = simulate_gaussian_clusters(rng, [30, 20, 50], k, means, covs)
 
 # Run k-means++
 coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta) 
-B = coreset.kmeans_pp()
+B, B_cost = coreset.kmeans_pp()
 ax = coreset.scatter_2D()
 ax = coreset.scatter_2D(B, ax)
 
+# Obtain bicriteria approximation by running k-means++ multiple times and selecting the 
+# best set of k initialization points. 
+B_star = coreset.get_bicriteria_kmeans_approx() 
+ax = coreset.scatter_2D(B_star, ax)
 plt.show()
-
 
 
 
