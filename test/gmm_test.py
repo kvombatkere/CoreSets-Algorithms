@@ -23,13 +23,39 @@ def simulate_gmm_data(rng, n, k, means, covs, weights):
 	#	weights: list or numpy ndarray of shape k, where 'weights[i]' gives the mixture weight of the ith Gaussian. 
 	#
 	# Returns: 
-	#	numpy ndarray of shape (n, d), where each row is an n-dimensional point sampled from the GMM. 
+	#	numpy ndarray of shape (n, d), where each row is a d-dimensional point sampled from the GMM. 
 
 	weights = weights / np.sum(weights)		
 	mixture_samples = rng.choice(k, size = n, p = weights)
 	gmm_samples = np.array([rng.multivariate_normal(means[j], covs[j]) for j in mixture_samples])
 	
 	return(gmm_samples)
+
+def simulate_gaussian_clusters(rng, n, k, means, covs):
+	# Returns a random sample of size (at most) n comprised of points sampled from k different multivariate normal 
+	# distributions (note: not a mixture of the distributions, different from GMM). The dimension of the points is  
+	# implied by the dimension of the mean vectors and covariance matrices. Denote this dimension by d.  
+	#
+	# Args: 
+	#	rng: numpy random number generator object. 
+	#	n: list or int. If list, ith element contains number of samples to be drawn from the ith Gaussian. If int, 
+	#	   floor(n/k) samples will be drawn from each Gaussian. 
+	#	k: int, the number of Gaussians.  
+	#	means: numpy ndarray of shape (k, d), where 'mean[i]' gives the mean vector of the ith Gaussian. 	
+	#	covs: numpy ndarray of shape (k, d, d), where 'cov[i]' gives the covariance matrix of the ith Gaussian. 
+	#
+	# Returns:
+	#	numpy ndarray of shape (m, d), where m <= n. Each row is a d-dimensional point sampled from one of the k 
+	#	Gaussians.  
+
+	# n interpreted as total number of samples; equally weight clusters
+	if len(n) == 1:
+		n_cluster = int(np.floor(n / k))
+		n = [int(n_cluster for i in range(k))]
+
+	samples = np.concatenate([rng.multivariate_normal(means[j], covs[j], size = n[j]) for j in range(k)])
+
+	return samples
 
 
 #
@@ -62,3 +88,29 @@ x3 = simulate_gmm_data(rng, n, 2, mean3, cov3, [.5, .5])
 plt.hist(x3, 100)
 plt.title('Spherical, Symmetric Mixture, k = 2, Projection of 2 Components onto 2D Plane')
 plt.show()
+
+#
+# Test Gaussian cluster data simulation
+#
+
+# Bivariate, k = 3
+means = [[5, 5], [-5, -5], [0, 0]]
+covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[3, 0], [0, 1]])]
+x = simulate_gaussian_clusters(rng, [30, 20, 50], 3, means, covs)
+plt.scatter([x[i][0] for i in range(len(x))], [x[i][1] for i in range(len(x))])
+plt.show()
+
+
+#
+# Test k-means++ algorithm
+#
+
+# Simulate bivariate data with 3 clusters
+
+
+
+
+
+
+
+

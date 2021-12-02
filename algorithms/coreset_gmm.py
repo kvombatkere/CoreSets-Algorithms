@@ -1,3 +1,4 @@
+import numpy as np
 
 class Coreset_GMM:
 	def __init__(self, rng, x_arr, k, epsilon, spectrum_bound, delta): 
@@ -17,7 +18,6 @@ class Coreset_GMM:
 	def d_set(self, x, Y):
 		return min([self.d(x, y) for y in Y])
 		
-
 	# Implementation of k-Means++ algorithm, which initializes the k means to be used
 	# in naive k-Means. 
 	def kmeans_pp(self):
