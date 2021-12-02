@@ -67,7 +67,6 @@ def simulate_gaussian_clusters(rng, n, k, means, covs):
 rng = np.random.default_rng(5)
 n = 1000
 
-'''
 # Bivariate, spherical, k = 1
 mean1 = [np.array([0, 0])]
 cov1 = [np.array([[1, 0], [0, 1]])]
@@ -103,7 +102,6 @@ x = simulate_gaussian_clusters(rng, [30, 20, 50], 3, means, covs)
 plt.scatter([x[i][0] for i in range(len(x))], [x[i][1] for i in range(len(x))])
 plt.show()
 
-'''
 
 #
 # Test k-means++ algorithm
