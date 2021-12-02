@@ -7,6 +7,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import sys
+import os
 
 def simulate_gmm_data(rng, n, k, means, covs, weights):
 	# Returns a random sample of size n from a mixture of k multivariate normal 
@@ -65,6 +67,7 @@ def simulate_gaussian_clusters(rng, n, k, means, covs):
 rng = np.random.default_rng(5)
 n = 1000
 
+'''
 # Bivariate, spherical, k = 1
 mean1 = [np.array([0, 0])]
 cov1 = [np.array([[1, 0], [0, 1]])]
@@ -100,15 +103,35 @@ x = simulate_gaussian_clusters(rng, [30, 20, 50], 3, means, covs)
 plt.scatter([x[i][0] for i in range(len(x))], [x[i][1] for i in range(len(x))])
 plt.show()
 
+'''
 
 #
 # Test k-means++ algorithm
 #
 
+# Load GMM Coreset module
+sys.path.insert(1, os.path.join(sys.path[0], '../algorithms'))
+import coreset_gmm as gmm
+
+# Setup 
+k = 3
+eps = .01
+spectrum_bound = 1/100
+delta = .01
+
 # Simulate bivariate data with 3 clusters
+means = [[5, 5], [-5, -5], [0, 0]]
+covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[3, 0], [0, 1]])]
+arr = simulate_gaussian_clusters(rng, [30, 20, 50], k, means, covs)
 
 
+# Run k-means++
+coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta) 
+B = coreset.kmeans_pp()
+ax = coreset.scatter_2D()
+ax = coreset.scatter_2D(B, ax)
 
+plt.show()
 
 
 
