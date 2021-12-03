@@ -59,13 +59,25 @@ def simulate_gaussian_clusters(rng, n, k, means, covs):
 
 	return samples
 
+#
+# General Setup
+#
+
+# Random Number Generator object to be used for all tests
+rng = np.random.default_rng(5)
+
+# Load GMM Coreset module
+sys.path.insert(1, os.path.join(sys.path[0], '../algorithms'))
+import coreset_gmm as gmm
+
 
 #
 # Test GMM data simulation
 #
 
-rng = np.random.default_rng(5)
 n = 1000
+
+'''
 
 # Bivariate, spherical, k = 1
 mean1 = [np.array([0, 0])]
@@ -107,10 +119,6 @@ plt.show()
 # Test k-means++ algorithm
 #
 
-# Load GMM Coreset module
-sys.path.insert(1, os.path.join(sys.path[0], '../algorithms'))
-import coreset_gmm as gmm
-
 # Setup 
 k = 3
 eps = .01
@@ -131,9 +139,37 @@ ax = coreset.scatter_2D(B, ax)
 
 # Obtain bicriteria approximation by running k-means++ multiple times and selecting the 
 # best set of k initialization points. 
-B_star = coreset.get_bicriteria_kmeans_approx() 
+B_star, B_star_cost = coreset.get_bicriteria_kmeans_approx() 
+print("B_star_cost = ", B_star_cost)
 ax = coreset.scatter_2D(B_star, ax)
 plt.show()
+
+'''
+
+#
+# Test coreset generation
+#
+
+# Setup 
+k = 3
+eps = .01
+spectrum_bound = 1/100
+delta = .01
+
+# Simulate bivariate data with 3 clusters
+means = [[5, 5], [-5, -5], [0, 0]]
+covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[3, 0], [0, 1]])]
+arr = simulate_gaussian_clusters(rng, [3000, 2000, 5000], k, means, covs)
+
+# Generate coreset
+coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta)
+C, C_weights = coreset.generate_coreset(m = 100)
+
+ax = coreset.scatter_2D()
+ax = coreset.scatter_2D(C, ax)
+plt.show()
+
+
 
 
 
