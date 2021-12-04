@@ -144,7 +144,6 @@ print("B_star_cost = ", B_star_cost)
 ax = coreset.scatter_2D(B_star, ax)
 plt.show()
 
-'''
 
 #
 # Test coreset generation
@@ -169,8 +168,46 @@ ax = coreset.scatter_2D()
 ax = coreset.scatter_2D(C, ax)
 plt.show()
 
+'''
+
+#
+# Test Weighted KMeans
+#
+
+# Setup 
+k = 3
+eps = .01
+spectrum_bound = 1/100
+delta = .01
+
+# Simulate bivariate data with 3 clusters
+means = [[5, 5], [-5, -5], [0, 0]]
+covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[7, 0], [0, 1]])]
+arr = simulate_gaussian_clusters(rng, [3000, 2000, 5000], k, means, covs)
+
+# Run Kmeans, initialized with kmeans++ (uniform weights)
+coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta)
+centers = coreset.weighted_kmeans(centers_init = 'kmeans++')
+print("Centers:")
+print(centers)
+
+ax = coreset.scatter_2D()
+ax = coreset.scatter_2D(centers, ax)
+plt.show()
 
 
+# Run Kmeans, initialized with kmeans++, weighting points by their contribution to within cluster variance
+w1 = np.array([(arr[i] - means[0])**2 for i in range(3000)])
+w2 = np.array([(arr[3000 + i] - means[1])**2 for i in range(2000)])
+w3 = np.array([(arr[5000 + i] - means[2])**2 for i in range(5000)])
+w = np.concatenate([w1, w2, w3])
 
+centers = coreset.weighted_kmeans(centers_init = 'kmeans++', w = w)
+print("Centers:")
+print(centers)
+
+ax2 = coreset.scatter_2D()
+ax2 = coreset.scatter_2D(centers, ax2)
+plt.show()
 
 

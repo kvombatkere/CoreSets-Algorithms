@@ -67,6 +67,41 @@ class Coreset_GMM:
 			
 		return (B, self.cluster_cost(B))
 
+	# Standard K-Means Algorithm with option to use non-uniform point weights
+	# If w is None, uses uniform weights (i.e. standard KMeans)
+	# If centers_init is None, randomly initializes the k center according to point weights. 
+	# If centers_init is 'kmeans++' initializes ceners using kmeans++ algorithm. 
+	def weighted_kmeans(self, w = None, centers_init = None, tol = 1e-4):
+		# TODO: option to scale input
+		n = len(self.x_array)
+
+		# Determine points weights
+		if w is None:
+			w = np.repeat([1 / n], [n])
+		else: 
+			w = np.array(w) / np.sum(w)
+
+		# Initialize k centers
+		if centers_init is None:
+			centers = self.rng.choice(self.x_array, size = self.k, p = w)
+		elif centers_init == 'kmeans++':
+			centers = self.kmeans_pp()[0]
+	
+		while True:
+			# Assign points to clusters
+			point_assignments = np.array([int(np.argmin([self.dist(x, c) for c in centers])) for x in self.x_array], dtype = np.int16)
+
+			# Compute new centers
+			centers_prev = np.array(centers)
+			centers = np.array([np.average(self.x_array[point_assignments == j], axis = 0, weights = w[point_assignments == j]) for j in range(self.k)])
+
+			# Stop when relative change in clusters is small (in Frobenius norm)				
+			if np.linalg.norm(centers - centers_prev) / np.linalg.norm(centers_prev) < tol:
+				print("weighted_kmeans() converged")
+				break
+
+		return centers
+
 	# Runs kmeans++ specified number of times, then returns the best set of initial values for the k means
 	# in the sense that minimizes squared pairwise distances. 
 	def get_bicriteria_kmeans_approx(self, N = None):
@@ -133,35 +168,7 @@ class Coreset_GMM:
 		return(coreset, coreset_weights)
 		
 		
-		# Standard K-Means Algorithm with option to use non-uniform point weights
-		# If w is None, uses uniform weights (i.e. standard KMeans)
-		# If centers_init is None, randomly initializes the k center according to points weightss
-		def weighted_kmeans(self, w = None, centers_init = None):
-			# TODO: option to scale input
-			n = len(self.x_array)
-
-			# Determine points weights
-			if w is None:
-				w = np.repeat([1 / n], [n])
-			else: 
-				w = np.array(w) / np.sum(w)
-
-			# Initialize k centers
-			if centers_init is None:
-				centers = self.rng.choice(self.x_array, size = self.k, p = w)
-
-			cost_prev = np.inf
-			
-			while TODO:
-				# Assign points to clusters
-				point_assignments = np.array([int(np.argmin([self.dist(x, c) for c in centers])) for x in self.x_array], dtype = np.int16)
-
-				# Compute new centers
-				centers = [np.average(self.x_array[point_assignments == j], weights = w[point_assignments == j]) for j in range(self.k)]
-
-
-
-
+	
 
 
 
