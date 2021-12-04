@@ -132,3 +132,38 @@ class Coreset_GMM:
 			
 		return(coreset, coreset_weights)
 		
+		
+		# Standard K-Means Algorithm with option to use non-uniform point weights
+		# If w is None, uses uniform weights (i.e. standard KMeans)
+		# If centers_init is None, randomly initializes the k center according to points weightss
+		def weighted_kmeans(self, w = None, centers_init = None):
+			# TODO: option to scale input
+			n = len(self.x_array)
+
+			# Determine points weights
+			if w is None:
+				w = np.repeat([1 / n], [n])
+			else: 
+				w = np.array(w) / np.sum(w)
+
+			# Initialize k centers
+			if centers_init is None:
+				centers = self.rng.choice(self.x_array, size = self.k, p = w)
+
+			cost_prev = np.inf
+			
+			while TODO:
+				# Assign points to clusters
+				point_assignments = np.array([int(np.argmin([self.dist(x, c) for c in centers])) for x in self.x_array], dtype = np.int16)
+
+				# Compute new centers
+				centers = [np.average(self.x_array[point_assignments == j], weights = w[point_assignments == j]) for j in range(self.k)]
+
+
+
+
+
+
+
+
+
