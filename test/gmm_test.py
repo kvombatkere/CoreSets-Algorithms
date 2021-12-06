@@ -69,6 +69,7 @@ rng = np.random.default_rng(5)
 # Load GMM Coreset module
 sys.path.insert(1, os.path.join(sys.path[0], '../algorithms'))
 import coreset_gmm as gmm
+import weighted_gmm as wgmm
 
 
 #
@@ -77,7 +78,6 @@ import coreset_gmm as gmm
 
 n = 1000
 
-'''
 
 # Bivariate, spherical, k = 1
 mean1 = [np.array([0, 0])]
@@ -168,7 +168,6 @@ ax = coreset.scatter_2D()
 ax = coreset.scatter_2D(C, ax)
 plt.show()
 
-'''
 
 #
 # Test Weighted KMeans
@@ -209,5 +208,14 @@ print(centers)
 ax2 = coreset.scatter_2D()
 ax2 = coreset.scatter_2D(centers, ax2)
 plt.show()
+
+
+
+
+
+
+
+
+
 
 

@@ -168,7 +168,7 @@ class Coreset_GMM:
 		return(coreset, coreset_weights)
 		
 		
-	
+		
 
 
 
