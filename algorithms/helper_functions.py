@@ -56,6 +56,24 @@ def cluster_cost(x_arr, B):
 # k-means Functions
 # ------------------------------------------------------------------------
 
+def get_point_assignments(x_arr, centers):
+	# Given data set and a set of "centers", return a vector that assigns each point to its 
+	# closest center (in Euclidean/l2 distance).
+	#
+	# Args:
+	#	x_arr: numpy array of shape (# observations, # features). 
+	#   centers: numpy array of shape (# centers, # features). 
+	#
+	# Returns:
+	#	numpy array of shape '# observations'. The ith entry of this array is an integer 
+	#	in {0, ..., # centers - 1}, indicating the index of 'centers' containing the center 
+	#	closest to point i in Euclidean distance. 	
+
+	return np.array([int(np.argmin([dist(x, c) for c in centers])) for x in x_arr], dtype = np.int16)
+
+
+
+
 def kmeans_pp(x_arr, k, rng):
 	# Implementation of k-Means++ algorithm, which initializes the k means to be used
 	# in naive k-Means. 
@@ -114,7 +132,7 @@ def weighted_kmeans(x_arr, k, rng, w = None, centers_init = None, tol = 1e-4):
 
 	while True:
 		# Assign points to clusters
-		point_assignments = np.array([int(np.argmin([dist(x, c) for c in centers])) for x in x_arr], dtype = np.int16)
+		point_assignments = get_point_assignments(x_arr, centers)
 
 		# Compute new centers
 		centers_prev = np.array(centers)

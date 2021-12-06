@@ -31,6 +31,7 @@ means1 = [[5, 5], [-5, -5], [0, 0]]
 covs1 = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[7, 0], [0, 1]])]
 arr1 = hf.simulate_gaussian_clusters(rng, [3000, 2000, 5000], 3, means1, covs1)
 
+'''
 
 #
 # Test GMM data simulation
@@ -113,7 +114,6 @@ ax = hf.scatter_2D([arr1, C], title = 'Coreset of size 100')
 plt.show()
 
 
-
 #
 # Test Weighted KMeans
 #
@@ -135,6 +135,30 @@ w = np.concatenate([w1, w2, w3])
 centers = hf.weighted_kmeans(arr1, k, rng, w = w, centers_init = 'kmeans++')
 ax = hf.scatter_2D([arr1, centers], title = 'Weighted kmeans: Weights Proportional to Within-Cluster Variance Contribution')
 plt.show()
+
+'''
+
+#
+# Test Weighted GMM 
+#
+
+# Setup
+k = 3
+prior_threshold = .001
+spectrum_bound = .001
+delta = .01
+eps = .01
+
+# Instantiate GMM Coreset and Weighted GMM objects
+coreset = gmm.Coreset_GMM(rng, arr1, k, eps, spectrum_bound, delta)
+gmm_model = wgmm.Weighted_GMM(rng, k, prior_threshold)
+
+# Compute coreset of size 1% of data
+C, w = coreset.generate_coreset(m = int(np.floor(.01 * len(arr1))))
+
+# Fit GMM model on coreset
+gmm_model.fit(C, w)
+
 
 
 

@@ -73,10 +73,10 @@ class Coreset_GMM:
 		sampling_weights = sampling_weights / np.sum(sampling_weights)
 
 		# Calculate weights for each point in coreset	
-		coreset = self.rng.choice(self.x_arr, size = m, p = sampling_weights)
-		coreset_weights = np.array([1 / x for x in sampling_weights]) / m	
-			
-		return(coreset, coreset_weights)
+		coreset_selector = self.rng.choice(np.arange(self.x_arr.shape[0]), size = m, p = sampling_weights)
+		coreset_weights = np.array([1 / sampling_weights[i] for i in coreset_selector])
+	
+		return(self.x_arr[coreset_selector], coreset_weights)
 		
 		
 		
