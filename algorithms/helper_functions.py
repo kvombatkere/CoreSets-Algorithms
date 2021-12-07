@@ -65,13 +65,17 @@ def max_distance(x_arr, C):
 	max_dist = 0
 	max_point = None
 
-	for c in C:
-		for p in x_arr:
+	for p in x_arr:
+		
+		total_center_distance = 0
+		for c in C:
 			
-			distance_val = dist(p,c)
-			if distance_val > max_dist:
-				max_dist = distance_val
-				max_point = p
+			distance_val_c = dist(p,c)
+			total_center_distance += distance_val_c
+
+		if total_center_distance > max_dist:
+			max_dist = total_center_distance
+			max_point = p
 
 	#print(max_dist, max_point)
 	return max_point
