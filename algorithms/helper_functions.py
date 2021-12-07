@@ -63,7 +63,7 @@ def max_distance(x_arr, C):
 	#	Point (array) farthest from C
 
 	max_dist = 0
-	max_point = []
+	max_point = None
 
 	for c in C:
 		for p in x_arr:
@@ -73,7 +73,7 @@ def max_distance(x_arr, C):
 				max_dist = distance_val
 				max_point = p
 
-	
+	#print(max_dist, max_point)
 	return max_point
 
 
