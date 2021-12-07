@@ -5,6 +5,11 @@ import warnings
 
 class Coreset_GMM:
 	def __init__(self, rng, x_arr, k, epsilon, spectrum_bound, delta): 
+		
+		# For univariate data, convert to # observations x 1 array
+		if len(x_arr.shape) == 1:
+			x_arr.shape = (len(x_arr), 1)
+
 		self.rng = rng
 		self.x_arr = x_arr
 		self.k = k

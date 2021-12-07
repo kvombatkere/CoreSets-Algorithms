@@ -88,6 +88,10 @@ def kmeans_pp(x_arr, k, rng):
 	#		- numpy array of shape (k, # features), the k means returned by the algorithm. 
 	#		- float, the "cost" of the clustering; i.e. the sum of squared errors to the k centroids.
 
+	# For univariate data, convert to # observations x 1 array
+	if len(x_arr.shape) == 1:
+		x_arr.shape = (len(x_arr), 1)
+
 	B = np.zeros(shape = (k, x_arr.shape[1]))
 	B[0] = rng.choice(x_arr)
 
@@ -117,6 +121,10 @@ def weighted_kmeans(x_arr, k, rng, w = None, centers_init = None, tol = 1e-4):
 	#	numpy array of shape (k, # features), the k centroids returned by the algorithm. 
 
 	n = len(x_arr)
+
+	# For univariate data, convert to # observations x 1 array
+	if len(x_arr.shape) == 1:
+		x_arr.shape = (len(x_arr), 1)
 
 	# Determine points weights
 	if w is None:
