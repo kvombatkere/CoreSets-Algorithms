@@ -52,6 +52,35 @@ def cluster_cost(x_arr, B):
 	return np.sum([dist_set(x, B)**2 for x in x_arr])
 
 
+def max_distance(x_arr, C):
+	# Returns the farthest point in x_arr from C
+	#
+	# Args:
+	#	x_arr: array of points in R^d
+	#	C: Array of centers chosen in R^d
+	#
+	# Returns:
+	#	Point (array) farthest from C
+
+	max_dist = 0
+	max_point = None
+
+	for p in x_arr:
+		
+		total_center_distance = 0
+		for c in C:
+			
+			distance_val_c = dist(p,c)
+			total_center_distance += distance_val_c
+
+		if total_center_distance > max_dist:
+			max_dist = total_center_distance
+			max_point = p
+
+	#print(max_dist, max_point)
+	return max_point
+
+
 # ------------------------------------------------------------------------
 # k-means Functions
 # ------------------------------------------------------------------------
