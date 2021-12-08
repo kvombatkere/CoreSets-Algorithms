@@ -24,7 +24,7 @@ class Coreset_kCenter:
     
     #Initialize with parameters
     def __init__(self, x_arr, k_val, epsilon):
-        self.x_array = np.array(x_arr)
+        self.x_array = x_arr
         self.k = k_val
         self.epsilon = epsilon
 
@@ -59,8 +59,8 @@ class Coreset_kCenter:
         plt.title(title_text, fontsize=11)
         plt.ylabel('y')
         plt.xlabel('x')
-        plt.xlim([1.25*min(x_plt), 1.25*max(x_plt)])
-        plt.ylim([1.25*min(y_plt), 1.25*max(y_plt)])
+        plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
+        plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
 
         plt.legend(loc='lower right', fontsize=9)
         plt.rcParams["figure.figsize"] = (8,8)
