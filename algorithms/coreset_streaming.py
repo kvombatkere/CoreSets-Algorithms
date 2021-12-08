@@ -5,17 +5,18 @@ Bhushan Suwal
 Dec 2021
 
 TODO:
-implement how set union would work
-test union
 run it on a stream
 figure initial resolution
 numpy-ify everything
 clean everything
+viz viz
+benchmark
 """
 
 import numpy as np
 import math
 import random
+import warnings
 
 class Coreset_Streaming:
     def __init__(self):
@@ -73,4 +74,29 @@ class Coreset_Streaming:
         """
         self.resolution += 1
         self.side_length *= 2
+        self.build_coreset()
+
+    def can_union(self, cs):
+        """ Returns True if the other Coreset can be "union"-ed with
+            self.
+        """
+        if cs.resolution == self.resolution:
+            return True
+        else:
+            warnings.warn("Current Coreset resolution is {}, other's resolution"
+                          "is {}".format(self.resolution, cs.resolution))
+            return False
+
+    def union(self, cs):
+        """ Adds the other coreset `cs` to current coreset.
+        """
+        # check if resolution is the same.
+        if self.resolution != cs.resolution:
+            raise Exception("Current Coreset resolution is {}, other's resolution"
+                            "is {}".format(self.resolution, cs.resolution))
+
+        # add points to self's coreset
+        for (point, weight) in cs.coreset:
+            self.coreset.append((point, weight))
+
         self.build_coreset()
