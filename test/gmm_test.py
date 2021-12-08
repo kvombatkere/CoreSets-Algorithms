@@ -10,54 +10,6 @@ import numpy as np
 import sys
 import os
 
-def simulate_gmm_data(rng, n, k, means, covs, weights):
-	# Returns a random sample of size n from a mixture of k multivariate normal 
-	# distributions in d-dimensional space (where d is implied by the dimension of the elements of 
-	# 'means' and 'covs')  with mean vectors given in 'mean', covariance matrices given 
-	# in 'cov', and mixture weights given in 'weights'. 
-	#
-	# Args:
-	#	rng: numpy random number generator object. 
-	#	n: int, the number of samples. 
-	#	k: int, the number of Gaussians in the mixture. 
-	#	means: numpy ndarray of shape (k, d), where 'mean[i]' gives the mean vector of the ith Gaussian. 	
-	#	covs: numpy ndarray of shape (k, d, d), where 'cov[i]' gives the covariance matrix of the ith Gaussian. 
-	#	weights: list or numpy ndarray of shape k, where 'weights[i]' gives the mixture weight of the ith Gaussian. 
-	#
-	# Returns: 
-	#	numpy ndarray of shape (n, d), where each row is a d-dimensional point sampled from the GMM. 
-
-	weights = weights / np.sum(weights)		
-	mixture_samples = rng.choice(k, size = n, p = weights)
-	gmm_samples = np.array([rng.multivariate_normal(means[j], covs[j]) for j in mixture_samples])
-	
-	return(gmm_samples)
-
-def simulate_gaussian_clusters(rng, n, k, means, covs):
-	# Returns a random sample of size (at most) n comprised of points sampled from k different multivariate normal 
-	# distributions (note: not a mixture of the distributions, different from GMM). The dimension of the points is  
-	# implied by the dimension of the mean vectors and covariance matrices. Denote this dimension by d.  
-	#
-	# Args: 
-	#	rng: numpy random number generator object. 
-	#	n: list or int. If list, ith element contains number of samples to be drawn from the ith Gaussian. If int, 
-	#	   floor(n/k) samples will be drawn from each Gaussian. 
-	#	k: int, the number of Gaussians.  
-	#	means: numpy ndarray of shape (k, d), where 'mean[i]' gives the mean vector of the ith Gaussian. 	
-	#	covs: numpy ndarray of shape (k, d, d), where 'cov[i]' gives the covariance matrix of the ith Gaussian. 
-	#
-	# Returns:
-	#	numpy ndarray of shape (m, d), where m <= n. Each row is a d-dimensional point sampled from one of the k 
-	#	Gaussians.  
-
-	# n interpreted as total number of samples; equally weight clusters
-	if len(n) == 1:
-		n_cluster = int(np.floor(n / k))
-		n = [int(n_cluster for i in range(k))]
-
-	samples = np.concatenate([rng.multivariate_normal(means[j], covs[j], size = n[j]) for j in range(k)])
-
-	return samples
 
 #
 # General Setup
@@ -70,7 +22,16 @@ rng = np.random.default_rng(5)
 sys.path.insert(1, os.path.join(sys.path[0], '../algorithms'))
 import coreset_gmm as gmm
 import weighted_gmm as wgmm
+import helper_functions as hf
 
+# Data sets to be used for many of the tests:
+
+# 1.) Gaussian, uniform mixture weights, Bivariate, 3 cluster, N = 10000
+means1 = [[5, 5], [-5, -5], [0, 0]]
+covs1 = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[7, 0], [0, 1]])]
+arr1 = hf.simulate_gaussian_clusters(rng, [3000, 2000, 5000], 3, means1, covs1)
+
+'''
 
 #
 # Test GMM data simulation
@@ -82,7 +43,7 @@ n = 1000
 # Bivariate, spherical, k = 1
 mean1 = [np.array([0, 0])]
 cov1 = [np.array([[1, 0], [0, 1]])]
-x1 = simulate_gmm_data(rng, n, 1, mean1, cov1, [1])
+x1 = hf.simulate_gmm_data(rng, n, 1, mean1, cov1, [1])
 plt.hist(x1, 100)
 plt.title('Spherical, k = 1, Projection of 2 Components onto 2D Plane')
 plt.show()
@@ -90,7 +51,7 @@ plt.show()
 # Bivariate, non-spherical, k = 1
 mean2 = [np.array([0, 0])]
 cov2 = [np.array([[3, 0], [0, 1]])]
-x2 = simulate_gmm_data(rng, n, 1, mean2, cov2, [1])
+x2 = hf.simulate_gmm_data(rng, n, 1, mean2, cov2, [1])
 plt.hist(x2, 100)
 plt.title('Non-Spherical, k = 1, Projection of 2 Components onto 2D Plane')
 plt.show()
@@ -98,7 +59,7 @@ plt.show()
 # Bivariate, spherical, k = 2
 mean3 = [np.array([-5, -2]), np.array([5, 2])]
 cov3 = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]])]
-x3 = simulate_gmm_data(rng, n, 2, mean3, cov3, [.5, .5])
+x3 = hf.simulate_gmm_data(rng, n, 2, mean3, cov3, [.5, .5])
 plt.hist(x3, 100)
 plt.title('Spherical, Symmetric Mixture, k = 2, Projection of 2 Components onto 2D Plane')
 plt.show()
@@ -110,8 +71,9 @@ plt.show()
 # Bivariate, k = 3
 means = [[5, 5], [-5, -5], [0, 0]]
 covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[3, 0], [0, 1]])]
-x = simulate_gaussian_clusters(rng, [30, 20, 50], 3, means, covs)
+x = hf.simulate_gaussian_clusters(rng, [30, 20, 50], 3, means, covs)
 plt.scatter([x[i][0] for i in range(len(x))], [x[i][1] for i in range(len(x))])
+plt.title("3 Gaussian Clusters")
 plt.show()
 
 
@@ -119,29 +81,9 @@ plt.show()
 # Test k-means++ algorithm
 #
 
-# Setup 
-k = 3
-eps = .01
-spectrum_bound = 1/100
-delta = .01
-
-# Simulate bivariate data with 3 clusters
-means = [[5, 5], [-5, -5], [0, 0]]
-covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[3, 0], [0, 1]])]
-arr = simulate_gaussian_clusters(rng, [30, 20, 50], k, means, covs)
-
-
 # Run k-means++
-coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta) 
-B, B_cost = coreset.kmeans_pp()
-ax = coreset.scatter_2D()
-ax = coreset.scatter_2D(B, ax)
-
-# Obtain bicriteria approximation by running k-means++ multiple times and selecting the 
-# best set of k initialization points. 
-B_star, B_star_cost = coreset.get_bicriteria_kmeans_approx() 
-print("B_star_cost = ", B_star_cost)
-ax = coreset.scatter_2D(B_star, ax)
+B, B_cost = hf.kmeans_pp(arr1, k, rng)
+ax = hf.scatter_2D([arr1, B], title = 'kmeans++')
 plt.show()
 
 
@@ -155,17 +97,20 @@ eps = .01
 spectrum_bound = 1/100
 delta = .01
 
-# Simulate bivariate data with 3 clusters
-means = [[5, 5], [-5, -5], [0, 0]]
-covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[3, 0], [0, 1]])]
-arr = simulate_gaussian_clusters(rng, [3000, 2000, 5000], k, means, covs)
+# Instantiate coreset object
+coreset = gmm.Coreset_GMM(rng, arr1, k, eps, spectrum_bound, delta)
+
+# Obtain bicriteria approximation by running k-means++ multiple times and selecting the 
+# best set of k initialization points. 
+B_star, B_star_cost = coreset.get_bicriteria_kmeans_approx() 
+print("B_star_cost = ", B_star_cost)
+ax = hf.scatter_2D([arr1, B_star], title = 'Bicriteria Approximation')
+plt.show()
 
 # Generate coreset
-coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta)
 C, C_weights = coreset.generate_coreset(m = 100)
 
-ax = coreset.scatter_2D()
-ax = coreset.scatter_2D(C, ax)
+ax = hf.scatter_2D([arr1, C], title = 'Coreset of size 100')
 plt.show()
 
 
@@ -175,39 +120,80 @@ plt.show()
 
 # Setup 
 k = 3
-eps = .01
-spectrum_bound = 1/100
-delta = .01
-
-# Simulate bivariate data with 3 clusters
-means = [[5, 5], [-5, -5], [0, 0]]
-covs = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[7, 0], [0, 1]])]
-arr = simulate_gaussian_clusters(rng, [3000, 2000, 5000], k, means, covs)
 
 # Run Kmeans, initialized with kmeans++ (uniform weights)
-coreset = gmm.Coreset_GMM(rng, arr, k, eps, spectrum_bound, delta)
-centers = coreset.weighted_kmeans(centers_init = 'kmeans++')
-print("Centers:")
-print(centers)
-
-ax = coreset.scatter_2D()
-ax = coreset.scatter_2D(centers, ax)
+centers = hf.weighted_kmeans(arr1, k, rng, centers_init = 'kmeans++')
+ax = hf.scatter_2D([arr1, centers], title = 'Weighted kmeans: Uniform Weights')
 plt.show()
-
 
 # Run Kmeans, initialized with kmeans++, weighting points by their contribution to within cluster variance
-w1 = np.array([(arr[i] - means[0])**2 for i in range(3000)])
-w2 = np.array([(arr[3000 + i] - means[1])**2 for i in range(2000)])
-w3 = np.array([(arr[5000 + i] - means[2])**2 for i in range(5000)])
+w1 = np.array([hf.dist(arr1[i], means1[0]) for i in range(3000)])
+w2 = np.array([hf.dist(arr1[i + 3000], means1[1]) for i in range(2000)])
+w3 = np.array([hf.dist(arr1[i + 5000], means1[2]) for i in range(5000)])
 w = np.concatenate([w1, w2, w3])
 
-centers = coreset.weighted_kmeans(centers_init = 'kmeans++', w = w)
-print("Centers:")
-print(centers)
-
-ax2 = coreset.scatter_2D()
-ax2 = coreset.scatter_2D(centers, ax2)
+centers = hf.weighted_kmeans(arr1, k, rng, w = w, centers_init = 'kmeans++')
+ax = hf.scatter_2D([arr1, centers], title = 'Weighted kmeans: Weights Proportional to Within-Cluster Variance Contribution')
 plt.show()
+
+'''
+
+#
+# Test Weighted GMM 
+#
+
+# Setup
+k = 3
+prior_threshold = .001
+spectrum_bound = .001
+delta = .01
+eps = .01
+
+# Instantiate GMM Coreset and Weighted GMM objects
+coreset = gmm.Coreset_GMM(rng, arr1, k, eps, spectrum_bound, delta)
+gmm_model = wgmm.Weighted_GMM(rng, k, prior_threshold)
+
+# Compute coreset of size 1% of data
+C, w = coreset.generate_coreset(m = int(np.floor(.01 * len(arr1))))
+
+# Fit GMM model on all data
+w, m, c = gmm_model.fit(arr1)
+print('GMM on all data:')
+print('Mixture Weights: ', w)
+print('Means: ', m)
+print('Covariances:')
+print(c)
+
+# Fit GMM model on coreset
+w, m, c = gmm_model.fit(C, w)
+print('GMM on all data:')
+print('Mixture Weights: ', w)
+print('Means: ', m)
+print('Covariances:')
+print(c)
+
+
+'''
+
+#
+# EM Algorithm Test: Simple Test 
+#
+
+# Simple univariate data
+arr_test = np.array([0, 0, 10, 11, 15, 1, 2, 2, 3, 10])
+
+# Instantiate Weighted GMM object
+gmm_test = wgmm.Weighted_GMM(rng, 2, .001)
+centers_init = hf.weighted_kmeans(arr_test, gmm_test.k, gmm_test.rng, centers_init = 'kmeans++')
+
+# Fit GMM
+w_clusters, means, covs = gmm_test.fit(arr_test, centers_init = centers_init)
+
+print(w_clusters)
+print(means)
+print(covs)
+
+'''
 
 
 
