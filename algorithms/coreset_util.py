@@ -3,6 +3,7 @@
 
 import pandas as pd
 import numpy as np
+import os
 
 class Coreset_Util:
     """
@@ -24,9 +25,9 @@ class Coreset_Util:
         
         self.X_array = self.convertToArray()
     
-    #Use Pandas to import dataset
+    #Use Pandas to import dataset - note that data must be stored in data folder and script run from test folder
     def importData(self, fileName):
-        filePath = 'data/'+fileName
+        filePath = os.getcwd()[:-4] + 'data/' + fileName
         importedData = pd.read_csv(filePath)
 
         print('Imported dataset:', fileName)

@@ -76,16 +76,16 @@ class Coreset_MinimumEnclosingBall:
 
         plt.scatter(x_plt, y_plt, s= 0.05, label = 'Points')
 
-        meb_x = [vec[0] for vec in meb_vec]
-        meb_y = [vec[1] for vec in meb_vec]
+        meb_x = [vec[0] for vec in meb_vec if isinstance(vec, np.ndarray)]
+        meb_y = [vec[1] for vec in meb_vec if isinstance(vec, np.ndarray)]
         plt.scatter(meb_x, meb_y, marker = '+', label = 'MEB')
 
         title_text = 'Scatter plot: Minimum enclosing ball'
         plt.title(title_text, fontsize=11)
         plt.ylabel('y')
         plt.xlabel('x')
-        plt.xlim([1.25*min(x_plt), 1.25*max(x_plt)])
-        plt.ylim([1.25*min(y_plt), 1.25*max(y_plt)])
+        plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
+        plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
 
         plt.legend(loc='lower right', fontsize=9)
         plt.rcParams["figure.figsize"] = (8,8)
