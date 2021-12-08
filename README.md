@@ -1,4 +1,4 @@
-## Coresets for Dimensionality Reduction & Clustering
+## Coreset Algorithms for Streaming & Clustering
 ------------------------------------------------------
 An open source Python implementation of various important coreset algorithms for dimensionality reduction and clustering. 
 
