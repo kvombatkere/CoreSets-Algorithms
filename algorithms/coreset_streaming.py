@@ -4,8 +4,8 @@ Class implementing the streaming coresets algorithm from
 by Har-Peled and Mazumdar, 2003. https://arxiv.org/pdf/1810.12826.pdf
 
 TODO:
-* fix side length -> depends on whether we are doing kmeans or kmedians. also
-will require eps value, to compute R.
+* write exposition about setting c=1, R=1. This makes the grids for k-median and
+  k-means the same.
 
 * run weighted k-median
 * compute costs
@@ -19,21 +19,25 @@ import random
 import warnings
 
 class Coreset_Streaming:
-    def __init__(self, max_size):
+    def __init__(self, max_size, ϵ=0.01, d=2):
         """ Intitializes the Coreset_Streaming class.
             Args:
                 max_size (Int): maximum size we allow  the coreset to get before
-                                doubling the resolution
+                                doubling the resolution.
         """
-        self.resolution = 1         # level of resolution
-        self.side_length = 2        # side_length of d-dimensional grid
-        self.max_size = max_size    # maximum size of coreset before resolution increase
-        self.coreset = []           # arr to store coreset
-        self.grid_points = dict()   # keys are grid_points, values are arrays of points
+        self.d = d                                          # dimensionality of data
+        self.resolution = 1                                 # level of resolution
+        self.side_length = (ϵ * 2 / (10 * self.d))          # side_length of d-dimensional grid
+        self.max_size = max_size                            # maximum size of coreset before resolution increase
+        self.coreset = []                                   # arr to store coreset
+        self.grid_points = dict()                           # keys are grid_points, values are arrays of points
 
     def add_point(self, point):
         """ Adds point `point` to the coreset, with a default weight of 1.
         """
+        if len(point) != self.d:
+            raise Exception("Point is expected to have {} dimensions.".format(self.d))
+
         weight = 1
         self.coreset.append((point, weight))
 
