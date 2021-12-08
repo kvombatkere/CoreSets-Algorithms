@@ -4,13 +4,12 @@ Class implementing the streaming coresets algorithm from
 by Har-Peled and Mazumdar, 2003. https://arxiv.org/pdf/1810.12826.pdf
 
 TODO:
-fix side length -> depends on whether we are doing kmeans or kmedians. also
+* fix side length -> depends on whether we are doing kmeans or kmedians. also
 will require eps value, to compute R.
 
-viz -> on simulated data of 4 gaussian clusters
-run weighted k-means
-run weighted k-median
-compute costs
+* run weighted k-median
+* compute costs
+---
 benchmark
 """
 
