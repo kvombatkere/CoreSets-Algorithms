@@ -158,11 +158,13 @@ C, w = coreset.generate_coreset(m = int(np.floor(.01 * len(arr1))))
 
 # Fit GMM model on all data
 w, m, c = gmm_model.fit(arr1)
-print('GMM on all data:')
-print('Mixture Weights: ', w)
-print('Means: ', m)
-print('Covariances:')
-print(c)
+# print('GMM on all data:')
+# print('Mixture Weights: ', w)
+# print('Means: ', m)
+# print('Covariances:')
+# print(c)
+
+'''
 
 # Fit GMM model on coreset
 w, m, c = gmm_model.fit(C, w)
@@ -173,7 +175,6 @@ print('Covariances:')
 print(c)
 
 
-'''
 
 #
 # EM Algorithm Test: Simple Test 
