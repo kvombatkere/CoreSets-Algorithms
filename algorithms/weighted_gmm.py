@@ -73,6 +73,7 @@ class Weighted_GMM:
 		print(w_clusters)
 		print('\n w2:')
 		print(w_clusters2)
+		
 
 		# Initialize the stopping condition value (negative log likelihood) 
 		value = np.inf 
@@ -87,10 +88,8 @@ class Weighted_GMM:
 			value_prev = value
 			value = self.auxiliary_function(R, w_points, w_clusters, P)
 			# value = self.neg_log_likelihood(w_points, w_clusters, P)
-			'''
 			if value_prev < value: 
 				raise ValueError('Negative Log Likelihood increased, indicating error occurred.')
-			'''
 
 			# M Step: Optimize parameters given responsibilities
 			w_clusters, means, covs = self.maximization2(x_arr, R)
@@ -137,7 +136,7 @@ class Weighted_GMM:
 
 		covs = np.zeros(shape = (self.k, d, d))
 		for j in range(self.k):
-			covs[j] = np.sum([R[i, j] * np.outer(x_arr[i], means[j]) for i in range(n)]) / w_clusters[j]	
+			covs[j] = sum([R[i, j] * np.outer(x_arr[i] - means[j], x_arr[i] - means[j]) for i in range(n)]) / w_clusters[j]	
 			covs[j] = covs[j] + np.diag(np.ones(d) * self.prior_threshold)
 
 		# Properly normalize weights
@@ -159,16 +158,13 @@ class Weighted_GMM:
 			for i in range(n):
 				z[j] = z[j] + R[i, j]
 				means[j] = means[j] + R[i, j] * x_arr[i]
-
-			for i in range(n):
-				covs[j] = covs[j] + (R[i, j] * np.outer(x_arr[i] - means[j], x_arr[i] - means[j]))
-		
-		# Normalize
-		z_sum = np.linalg.norm(z, ord = 1)
-		for j in range(self.k):
-			w_clusters[j] = z[j] / z_sum
+				covs[j] = covs[j] + (R[i, j] * np.outer(x_arr[i], x_arr[i]))
+			
 			means[j] = means[j] / z[j]
-			covs[j] = (covs[j] / z[j]) + np.diag(np.ones(d) * self.prior_threshold)
+			covs[j] = (covs[j] / z[j]) - np.outer(means[j], means[j]) + np.diag(np.ones(d) * self.prior_threshold)
+	
+		# Normalize weights
+		w_clusters = z / np.linalg.norm(z, ord = 1)
 
 		return (w_clusters, means, covs)
 
