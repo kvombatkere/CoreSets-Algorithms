@@ -34,7 +34,7 @@ class Coreset_GMM:
 
 	# Calculates weight for each point that determines sampling probability in coreset construction
 	def calc_point_weight(self, alpha, x, x_cost, cluster_size, cluster_cost, B_cost):
-		return alpha * x_cost + 2 * alpha * cluster_cost / cluster_size + 2 * B_cost / cluster_size
+		return (alpha * x_cost) + (2 * alpha * cluster_cost / cluster_size) + (2 * B_cost / cluster_size)
 
 
 	def generate_coreset(self, B = None, B_cost = None, N_bicriteria_runs = None, m = None):
@@ -67,9 +67,9 @@ class Coreset_GMM:
 			closest_centers[i] = int(np.argmin(dists_to_centers))
 			point_costs[i] = dists_to_centers[closest_centers[i]]
 
-		closest_centers = np.array([np.argmin([hf.dist(x, b) for b in B]) for x in self.x_arr])
+		# closest_centers = np.array([np.argmin([hf.dist(x, b) for b in B]) for x in self.x_arr])
 		B_cluster_sizes = [int(np.sum(closest_centers == j)) for j in range(B_len)]
-		B_cluster_costs = [hf.cluster_cost(self.x_arr[self.x_arr == j], B) for j in range(B_len)]
+		B_cluster_costs = [hf.cluster_cost(self.x_arr[closest_centers == j], B) for j in range(B_len)]
 
 		# Weight points and sample based on weighting to create coreset	
 		sampling_weights = np.array([self.calc_point_weight(alpha, self.x_arr[i], point_costs[i], 
@@ -79,7 +79,7 @@ class Coreset_GMM:
 
 		# Calculate weights for each point in coreset	
 		coreset_selector = self.rng.choice(np.arange(self.x_arr.shape[0]), size = m, p = sampling_weights)
-		coreset_weights = np.array([1 / sampling_weights[i] for i in coreset_selector])
+		coreset_weights = np.array([1 / (sampling_weights[i] * m) for i in coreset_selector])
 	
 		return(self.x_arr[coreset_selector], coreset_weights)
 		
