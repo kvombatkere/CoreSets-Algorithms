@@ -49,31 +49,6 @@ class Weighted_GMM:
 
 		# Optimize parameters given initial cluster responsibilities
 		w_clusters, means, covs = self.maximization(x_arr, R)
-		w_clusters2, means2, covs2 = self.maximization2(x_arr, R)
-
-		print('Means:')
-		print('m1:')
-		print(means)
-		print("\n m2:")
-		print(means2)
-
-		print('\n\nCovs:')
-		print('c1:')
-		for cov in covs:
-			print(cov)
-			print('\n')
-
-		print('\n c2:')
-		for cov in covs2:
-			print(cov)
-			print('\n')
-
-		print('\n\nMixture Weights:')
-		print('w1:')
-		print(w_clusters)
-		print('\n w2:')
-		print(w_clusters2)
-		
 
 		# Initialize the stopping condition value (negative log likelihood) 
 		value = np.inf 
@@ -82,17 +57,16 @@ class Weighted_GMM:
 		for i in range(max_itr): 
 			# E Step: Compute responsibilities given parameters
 			R, P = self.expectation(x_arr, w_points, w_clusters, means, covs)
-			 #R2 = self.expectation2(x_arr, w_points, w_clusters, means, covs)
 	
 			# Compute relative change in objective (i.e. auxiliary or "Q" function)
 			value_prev = value
-			value = self.auxiliary_function(R, w_points, w_clusters, P)
-			# value = self.neg_log_likelihood(w_points, w_clusters, P)
+			value = self.neg_log_likelihood(w_points, w_clusters, P)
+			# value = self.auxiliary_function(R, w_points, w_clusters, P)
 			if value_prev < value: 
-				raise ValueError('Negative Log Likelihood increased, indicating error occurred.')
+				raise ValueError('Objective function increased, indicating error occurred.')
 
 			# M Step: Optimize parameters given responsibilities
-			w_clusters, means, covs = self.maximization2(x_arr, R)
+			w_clusters, means, covs = self.maximization(x_arr, R)
 
 			# Consider stopping condition: absolute change in auxiliary function
 			if not np.isinf(value_prev):

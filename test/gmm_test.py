@@ -154,28 +154,27 @@ coreset = gmm.Coreset_GMM(rng, arr1, k, eps, spectrum_bound, delta)
 gmm_model = wgmm.Weighted_GMM(rng, k, prior_threshold)
 
 # Compute coreset of size 1% of data
-C, w = coreset.generate_coreset(m = int(np.floor(.01 * len(arr1))))
+C, w_C = coreset.generate_coreset(m = int(np.floor(.01 * len(arr1))))
 
 # Fit GMM model on all data
 w, m, c = gmm_model.fit(arr1)
-# print('GMM on all data:')
-# print('Mixture Weights: ', w)
-# print('Means: ', m)
-# print('Covariances:')
-# print(c)
-
-'''
+print('\n\nGMM on all data:')
+print('\nMixture Weights: ', w)
+print('\nMeans: ', m)
+print('\nCovariances:')
+for cov in c:
+	print(cov)
 
 # Fit GMM model on coreset
-w, m, c = gmm_model.fit(C, w)
-print('GMM on all data:')
-print('Mixture Weights: ', w)
-print('Means: ', m)
-print('Covariances:')
-print(c)
+w, m, c = gmm_model.fit(C, w_C)
+print('\n\nGMM on coreset:')
+print('\nMixture Weights: ', w)
+print('\nMeans: ', m)
+print('\nCovariances:')
+for cov in c:
+	print(cov)
 
-
-
+'''
 #
 # EM Algorithm Test: Simple Test 
 #
