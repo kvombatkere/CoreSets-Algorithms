@@ -49,7 +49,30 @@ class Weighted_GMM:
 
 		# Optimize parameters given initial cluster responsibilities
 		w_clusters, means, covs = self.maximization(x_arr, R)
-		covs = [cov + np.diag(np.ones(x_arr.shape[1]) * self.prior_threshold) for cov in covs]
+		w_clusters2, means2, covs2 = self.maximization2(x_arr, R)
+
+		print('Means:')
+		print('m1:')
+		print(means)
+		print("\n m2:")
+		print(means2)
+
+		print('\n\nCovs:')
+		print('c1:')
+		for cov in covs:
+			print(cov)
+			print('\n')
+
+		print('\n c2:')
+		for cov in covs2:
+			print(cov)
+			print('\n')
+
+		print('\n\nMixture Weights:')
+		print('w1:')
+		print(w_clusters)
+		print('\n w2:')
+		print(w_clusters2)
 
 		# Initialize the stopping condition value (negative log likelihood) 
 		value = np.inf 
@@ -70,12 +93,12 @@ class Weighted_GMM:
 			'''
 
 			# M Step: Optimize parameters given responsibilities
-			w_clusters, means, covs = self.maximization(x_arr, R)
+			w_clusters, means, covs = self.maximization2(x_arr, R)
 
-			# Consider stopping condition: relative change in auxiliary function
+			# Consider stopping condition: absolute change in auxiliary function
 			if not np.isinf(value_prev):
-				print("(", value_prev, ", ", value, ", ", (value - value_prev) / value_prev, ")")
-				if (value - value_prev) / value_prev < tol:
+				print('(', value_prev, ',', value, ',', value_prev - value, ')')
+				if value_prev - value < tol:
 					converged = True
 
 			if converged:
@@ -121,6 +144,34 @@ class Weighted_GMM:
 		w_clusters = w_clusters / w_clusters.sum()
 
 		return (w_clusters, means, covs)
+
+	
+	def maximization2(self, x_arr, R):
+		n = x_arr.shape[0]
+		d = x_arr.shape[1]
+
+		z = np.zeros(shape = self.k)
+		means = np.zeros(shape = (self.k, d))
+		covs = np.zeros(shape = (self.k, d, d))
+		w_clusters = np.zeros(shape = self.k)
+
+		for j in range(self.k):
+			for i in range(n):
+				z[j] = z[j] + R[i, j]
+				means[j] = means[j] + R[i, j] * x_arr[i]
+
+			for i in range(n):
+				covs[j] = covs[j] + (R[i, j] * np.outer(x_arr[i] - means[j], x_arr[i] - means[j]))
+		
+		# Normalize
+		z_sum = np.linalg.norm(z, ord = 1)
+		for j in range(self.k):
+			w_clusters[j] = z[j] / z_sum
+			means[j] = means[j] / z[j]
+			covs[j] = (covs[j] / z[j]) + np.diag(np.ones(d) * self.prior_threshold)
+
+		return (w_clusters, means, covs)
+
 
 	def expectation2(self, x_arr, w_points, w_clusters, means, covs):
 		n = x_arr.shape[0]
