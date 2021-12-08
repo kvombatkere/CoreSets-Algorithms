@@ -51,25 +51,31 @@ class Weighted_GMM:
 		w_clusters, means, covs = self.maximization(x_arr, R)
 		covs = [cov + np.diag(np.ones(x_arr.shape[1]) * self.prior_threshold) for cov in covs]
 
-		# Initialize auxiliary function value 
-		Q = np.inf 
+		# Initialize the stopping condition value (negative log likelihood) 
+		value = np.inf 
 		converged = False
 
 		for i in range(max_itr): 
 			# E Step: Compute responsibilities given parameters
 			R, P = self.expectation(x_arr, w_points, w_clusters, means, covs)
-			
-			# Compute relative change in objective (i.e. auxiliary or "Q" function)
-			Q_prev = Q
-			Q = self.auxiliary_function(R, w_points, w_clusters, P)
+			 #R2 = self.expectation2(x_arr, w_points, w_clusters, means, covs)
 	
+			# Compute relative change in objective (i.e. auxiliary or "Q" function)
+			value_prev = value
+			value = self.auxiliary_function(R, w_points, w_clusters, P)
+			# value = self.neg_log_likelihood(w_points, w_clusters, P)
+			'''
+			if value_prev < value: 
+				raise ValueError('Negative Log Likelihood increased, indicating error occurred.')
+			'''
+
 			# M Step: Optimize parameters given responsibilities
 			w_clusters, means, covs = self.maximization(x_arr, R)
 
 			# Consider stopping condition: relative change in auxiliary function
-			if not np.isinf(Q_prev):
-				print("(", Q_prev, ", ", Q, ", ", (Q_prev - Q) / Q_prev, ")")
-				if (Q_prev - Q) / Q_prev < tol:
+			if not np.isinf(value_prev):
+				print("(", value_prev, ", ", value, ", ", (value - value_prev) / value_prev, ")")
+				if (value - value_prev) / value_prev < tol:
 					converged = True
 
 			if converged:
@@ -77,6 +83,7 @@ class Weighted_GMM:
 
 		if not converged:
 			warnings.warn("Weighted GMM did not converge")
+
 
 		return (w_clusters, means, covs)
 			
@@ -115,6 +122,26 @@ class Weighted_GMM:
 
 		return (w_clusters, means, covs)
 
+	def expectation2(self, x_arr, w_points, w_clusters, means, covs):
+		n = x_arr.shape[0]
+		R = np.zeros(shape = (n, self.k))	
+		z = np.zeros(shape = n)
+	
+		for i in range(n):
+			for j in range(self.k):
+				R[i, j] = w_clusters[j] * multivariate_normal(means[j], covs[j]).pdf(x_arr[i])
+				if R[i, j] == 0:
+					R[i, j] = 1e-16
+
+				z[i] = z[i] + R[i, j]
+
+		# Normalize and weight by points weights
+		for i in range(n):
+			for j in range(self.k):
+				R[i, j] = w_points[i] * R[i, j] / z[i]
+
+		return R
+
 
 	def expectation(self, x_arr, w_points, w_clusters, means, covs):
 		# Performs the standard "expectation" step for EM for GMMs. Computes the "responsibility" matrix
@@ -141,9 +168,13 @@ class Weighted_GMM:
 		# Compute multivariate normal densities
 		for j in range(self.k):
 			P[:, j] = multivariate_normal(means[j], covs[j]).pdf(x_arr)
-
+			
 		# Weight columns by mixture weights
 		R = P * w_clusters[None, :]
+
+		# If any rows cntain all zeros, purturb the values
+		# to be a small positive number to avoid dividing by 0 below. 
+		R[np.where(~R.any(axis = 1))[0], :] = 1e-16
 
 		# Normalize rows: divide by row sums
 		R = R / R.sum(1)[:, None]
@@ -153,6 +184,10 @@ class Weighted_GMM:
 
 		return R, P
 
+	def neg_log_likelihood(self, w_points, w_clusters, P):
+		log_likelihood = np.sum([w_points[i] * np.log(np.max([w_clusters.dot(P[i, :]), 1e-16])) for i in range(len(w_points))])
+	
+		return -1 * log_likelihood
 
 
 	def auxiliary_function(self, R, w_points, w_clusters, P):
@@ -169,4 +204,7 @@ class Weighted_GMM:
 		# Returns: 
 		#	float, the negative of the Q/auxiliary function. 
 
-		return -1 * (w_points.dot(R.dot(np.log(w_clusters))) + w_points.dot((R * np.log(P)).sum(1)))
+		return -1 * (w_points.dot(R.dot(np.log(np.maximum(w_clusters, 1e-16)))) + w_points.dot((R * np.log(np.maximum(P, 1e-16))).sum(1)))
+
+
+
