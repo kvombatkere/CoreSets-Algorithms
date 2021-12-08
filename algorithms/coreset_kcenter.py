@@ -4,7 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import helper_functions as hf
-import time
+import time, random
 
 
 class Coreset_kCenter:
@@ -24,14 +24,21 @@ class Coreset_kCenter:
     
     #Initialize with parameters
     def __init__(self, x_arr, k_val, epsilon):
-        self.x_array = x_arr
+        if isinstance(x_arr, np.ndarray):
+            self.x_array = x_arr
+        else:
+            self.x_array = np.array(x_arr)
+
+
         self.k = k_val
         self.epsilon = epsilon
 
         self.dims = self.x_array.shape[1]
         self.centers = None
         self.R_val = None
+        self.side_length = None
 
+        self.gridpoints = {}
         self.coreSet_array = []
 
 
@@ -96,7 +103,30 @@ class Coreset_kCenter:
 
         return 
 
+    #Snap points to grid - in d dimensions
+    def snap_point_to_grid(self, point):
+        grid_loc = []
+
+        #Iterate over each dimensions and snap to nearest grid coordinates
+        for d_val in point:
+            point_grid_location = d_val - (d_val % self.side_length)
+            grid_loc.append(point_grid_location)
+
+        grid_loc = tuple(grid_loc)
+
+        #Add to grid points dict - if location exists add point to location
+        if grid_loc in self.gridpoints.keys():
+            self.gridpoints[grid_loc].append(point)
+
+
+        else: #if location doesn't exist create array and add point
+            self.gridpoints[grid_loc] = []
+            self.gridpoints[grid_loc].append(point)
+
+        return
     
+
+
     #Compute d-dimensinsional grid
     def compute_d_grid(self):
         if self.R_val is None:
@@ -106,38 +136,26 @@ class Coreset_kCenter:
         print("Epsilon = {}, R_Cost = {}, Dimensions = {}".format(self.epsilon, self.R_val, self.dims))
         
         #Side length of d-dimensional grid
-        side_length = (self.epsilon*self.R_val)/(5*self.dims)
-        print("d-dimensional grid side_length = ", side_length)
-
-        x_min, y_min, x_max, y_max = self.get_minMax_xy()
+        self.side_length = (self.epsilon*self.R_val)/(5*self.dims)
+        print("d-dimensional grid side_length = ", self.side_length)
         
-        #Use grid to extract coreset - currently in 2D
-        x = x_min
-        while x < x_max:
-            y = y_min
-            while y < y_max:
-                
-                for p in self.x_array:
-                    if (x < p[0] < x+side_length) and (y < p[1] < y + side_length):
-                        self.coreSet_array.append(p)
-                        break
-
-                #Advance to next cell
-                y += side_length
-            
-            x += side_length
-
-        return self.coreSet_array
+        #Snap all points to d-dimensional grid
+        for p in self.x_array:
+            self.snap_point_to_grid(p)
+        
+        return
 
 
-    #Get min and max values of x and y
-    def get_minMax_xy(self):
-        min_X = np.amin(self.x_array, axis=0)[0]
-        min_Y = np.amin(self.x_array, axis=0)[1]
-        max_X = np.amax(self.x_array, axis=0)[0]
-        max_Y = np.amax(self.x_array, axis=0)[1]
+    #Extract core set from grid - assumes self.compute_d_grid() has been called
+    def create_kcoreset_from_grid(self):
 
-        return min_X, min_Y, max_X, max_Y
+        #Iterate over all grid locations that have points
+        for grid_point, points_arr in self.gridpoints.items():
+            coreset_point = random.choice(points_arr)
+            self.coreSet_array.append(coreset_point)
+
+        return
+
 
 
 
@@ -150,8 +168,10 @@ class Coreset_kCenter:
         self.greedy_kcenter()
 
         self.compute_d_grid()
-        self.plot2D_coreset()
 
+        self.create_kcoreset_from_grid()
+
+        self.plot2D_coreset()
 
         print("----------------------------------------------------------------------------------------------")
         print("Generated (k,epsilon) Center Coreset of size={} on Input dimensions={}".format(len(self.coreSet_array), self.x_array.shape))
