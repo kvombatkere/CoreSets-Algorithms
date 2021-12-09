@@ -117,6 +117,74 @@ def max_distance(x_arr, C):
 	#print(max_dist, max_point)
 	return max_point
 
+# ------------------------------------------------------------------------
+# k-medians Functions
+# ------------------------------------------------------------------------
+
+def get_point_assignments_manhattan(x_arr, centers):
+	# Given data set and a set of "centers", return a vector that assigns each point to its
+	# closest center (in Manhattan/l1 distance).
+	#
+	# Args:
+	#	x_arr: numpy array of shape (# observations, # features).
+	#   centers: numpy array of shape (# centers, # features).
+	#
+	# Returns:
+	#	numpy array of shape '# observations'. The ith entry of this array is an integer
+	#	in {0, ..., # centers - 1}, indicating the index of 'centers' containing the center
+	#	closest to point i in Manhattan distance.
+
+	return np.array([int(np.argmin([dist_manhattan(x, c) for c in centers])) for x in x_arr], dtype = np.int16)
+
+def weighted_kmedians(x_arr, k, rng, w = None, tol = 1e-4):
+	# Standard K-Medians Algorithm with option to use non-uniform point weights.
+	#
+	# Args:
+	#	x_arr: numpy array of shape (# observations, # features).
+	#	k: int, number of clusters.
+	#	rng: numpy random number generator object.
+	#	w: numpy array of shape '# observations'. The point weights. If None, uses standard uniform weights.
+	#	centers_init: If numpy array of shape (k, # features) then interpreted as the k centroids used to
+	#				  initialize the algorihth. If 'kmeans++' then initializes the centers via the k-means++
+	#				  algorithm. If None, uniformly generates the k centroids.
+	#	tol: float, stopping condition. Algorithm terminates when relative change in centers is smaller than
+	#		 'tol' (in 2-norm/Frobenius norm).
+	#
+	# Returns:
+	#	numpy array of shape (k, # features), the k centroids returned by the algorithm.
+
+	n = len(x_arr)
+
+	# For univariate data, convert to # observations x 1 array
+	if len(x_arr.shape) == 1:
+		x_arr.shape = (len(x_arr), 1)
+
+	# Determine points weights
+	if w is None:
+		w = np.repeat([1 / n], [n])
+	else:
+		w = np.array(w) / np.sum(w)
+
+	# Initialize k centers
+	centers = rng.choice(x_arr, size = k, p = w)
+
+	tries = 0
+	while tries < 10:
+		tries += 1
+		# Assign points to clusters
+		point_assignments = get_point_assignments_manhattan(x_arr, centers)
+
+		# Compute new centers
+		centers_prev = np.array(centers)
+		centers = np.array([np.average(x_arr[point_assignments == j], axis = 0, weights = w[point_assignments == j]) for j in range(k)])
+
+		# Stop when relative change in clusters is small (in Frobenius norm)
+		# print(np.linalg.norm(centers - centers_prev))
+		if np.linalg.norm(centers - centers_prev) / np.linalg.norm(centers_prev) < tol:
+			print("weighted_kmedians() converged")
+			break
+
+	return centers
 
 # ------------------------------------------------------------------------
 # k-means Functions
@@ -136,8 +204,6 @@ def get_point_assignments(x_arr, centers):
 	#	closest to point i in Euclidean distance.
 
 	return np.array([int(np.argmin([dist(x, c) for c in centers])) for x in x_arr], dtype = np.int16)
-
-
 
 
 def kmeans_pp(x_arr, k, rng):
