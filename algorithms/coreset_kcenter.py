@@ -43,19 +43,25 @@ class Coreset_kCenter:
 
 
     #Function to plot Coreset and x_array
-    def plot2D_coreset(self):
-        if  self.coreSet_array == []:
-            print("d-dimensional grid not computed yet. Compute first and then plot")
-            return None
+    def plot2D_coreset(self, coreset_plot_flag=False):
+        # if  self.coreSet_array == []:
+        #     print("d-dimensional grid not computed yet. Compute first and then plot")
+        #     return None
 
         x_plt = [vec[0] for vec in self.x_array]
         y_plt = [vec[1] for vec in self.x_array]
 
-        plt.scatter(x_plt, y_plt, s=0.5, label = 'Points')
+        if coreset_plot_flag:
+            plt.scatter(x_plt, y_plt, s=0.5, color='orange', label = 'Coreset Points')
+        
+        else:
+            plt.scatter(x_plt, y_plt, s=0.5, label = 'Points')
 
-        c_x = [vec[0] for vec in  self.coreSet_array]
-        c_y = [vec[1] for vec in  self.coreSet_array]
-        plt.scatter(c_x, c_y, marker = '+', label = 'CoreSet')
+       
+        if not coreset_plot_flag:
+            c_x = [vec[0] for vec in  self.coreSet_array]
+            c_y = [vec[1] for vec in  self.coreSet_array]
+            plt.scatter(c_x, c_y, s=2.5, marker = '+', label = 'CoreSet')
 
         c_x = [vec[0] for vec in self.centers]
         c_y = [vec[1] for vec in self.centers]
@@ -64,13 +70,14 @@ class Coreset_kCenter:
 
         title_text = 'k-Center Coreset (size={}) for k={}, epsilon={}, n={}'.format(len(self.coreSet_array),self.k, self.epsilon, self.x_array.shape[0])
         plt.title(title_text, fontsize=11)
-        plt.ylabel('y')
-        plt.xlabel('x')
+        plt.ylabel('Longitude (deg E)')
+        plt.xlabel('Latitude (deg N)')
         #plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
         #plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
 
-        plt.legend(loc='lower right', fontsize=9)
+        plt.legend(loc='upper right', fontsize=9)
         plt.rcParams["figure.figsize"] = (8,8)
+        plt.grid()
         plt.show()
 
         return None
@@ -100,7 +107,7 @@ class Coreset_kCenter:
         
         #Get the cost, R
         self.R_val = max(point_distances)
-        print("Cost (max) of k-center clustering={:.1f}".format(self.R_val))
+        print("Cost (max) of k-center clustering={:.3f}".format(self.R_val))
 
         return 
 

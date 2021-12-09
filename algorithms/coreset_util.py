@@ -18,17 +18,17 @@ class Coreset_Util:
     """
 
     #Initialize with dataset name
-    def __init__(self, datasetName, columnNames=None):
-        self.dataframe = self.importData(datasetName)
+    def __init__(self, datasetName, columnNames=None, col_sep=None):
+        self.dataframe = self.importData(datasetName, col_sep)
         if columnNames != None:
             self.subsetColumns(columnNames)
         
         self.X_array = self.convertToArray()
     
     #Use Pandas to import dataset - note that data must be stored in data folder and script run from test folder
-    def importData(self, fileName):
+    def importData(self, fileName, col_sep):
         filePath = os.getcwd()[:-4] + 'data/' + fileName
-        importedData = pd.read_csv(filePath)
+        importedData = pd.read_csv(filePath, sep = col_sep)
 
         print('Imported dataset:', fileName)
         return importedData
