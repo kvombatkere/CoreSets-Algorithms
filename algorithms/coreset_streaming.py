@@ -2,15 +2,6 @@
 Class implementing the streaming coresets algorithm from
 "Coresets for k-Means and k-Median Clustering and their Applications"
 by Har-Peled and Mazumdar, 2003. https://arxiv.org/pdf/1810.12826.pdf
-
-TODO:
-* write exposition about setting c=1, R=1. This makes the grids for k-median and
-  k-means the same.
-
-* run weighted k-median
-* compute costs
----
-benchmark
 """
 
 import numpy as np
