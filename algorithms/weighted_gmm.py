@@ -15,6 +15,11 @@ class Weighted_GMM:
 		self.rng = rng
 		self.k = k
 		self.prior_threshold = prior_threshold
+		self.x_arr = None
+		self.n = None 
+		self.w_clusters = None
+		self.means = None
+		self.covs = None
 
 	def fit(self, x_arr, w_points = None, centers_init = 'kmeans', tol = 1e-8, max_itr = 10000):
 
@@ -27,7 +32,10 @@ class Weighted_GMM:
 			w_points = np.ones(shape = x_arr.shape[0])
 		w_points = np.array(w_points) / np.sum(w_points)
 
+		# Store data attributes
 		n = x_arr.shape[0]
+		self.n = n
+		self.x_arr = x_arr
 
 		# Initialize matrix of cluster responsibilities; R_ij = p(point i in cluster j|x_i, mean_j, cov_j)
 		# Initial values come from kmeans "hard clustering"; all probability mass assigned to one cluster for each point.
@@ -70,7 +78,6 @@ class Weighted_GMM:
 
 			# Consider stopping condition: absolute change in auxiliary function
 			if not np.isinf(value_prev):
-				print('(', value_prev, ',', value, ',', value_prev - value, ')')
 				if value_prev - value < tol:
 					converged = True
 
@@ -80,6 +87,10 @@ class Weighted_GMM:
 		if not converged:
 			warnings.warn("Weighted GMM did not converge")
 
+		# Store current parameter values
+		self.w_clusters = w_clusters
+		self.means = means
+		self.covs = covs
 
 		return (w_clusters, means, covs)
 			
@@ -206,9 +217,34 @@ class Weighted_GMM:
 		return R, P
 
 	def neg_log_likelihood(self, w_points, w_clusters, P):
+		# This function is defined to conveniently work with the EM algorithm loop. For a more general 
+		# function that calculates the log-liklihood, see 'evaluate_log_likelihood()'. 
 		log_likelihood = np.sum([w_points[i] * np.log(np.max([w_clusters.dot(P[i, :]), 1e-16])) for i in range(len(w_points))])
 	
 		return -1 * log_likelihood
+
+	def evaluate_log_likelihood(self, x_arr = None, w_clusters = None, means = None, covs = None):
+
+		# If args are not provided, defaults to class attributes
+		if x_arr is None:
+			x_arr = self.x_arr
+		if w_clusters is None: 
+			w_clusters = self.w_clusters
+		if means is None:
+			means = self.means
+		if covs is None:
+			covs = self.covs
+
+		log_likelihood = 0
+
+		for i in range(x_arr.shape[0]):
+			x_i_contribution = 0 
+			for j in range(x_arr.shape[1]):
+				x_i_contribution = x_i_contribution + (w_clusters[j] * multivariate_normal(means[j], covs[j]).pdf(x_arr[i]))
+			
+			log_likelihood = log_likelihood + np.log(x_i_contribution)
+
+		return log_likelihood
 
 
 	def auxiliary_function(self, R, w_points, w_clusters, P):
