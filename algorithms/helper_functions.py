@@ -178,8 +178,7 @@ def weighted_kmedians(x_arr, k, rng, w = None, tol = 1e-4):
 		centers_prev = np.array(centers)
 		centers = np.array([np.average(x_arr[point_assignments == j], axis = 0, weights = w[point_assignments == j]) for j in range(k)])
 
-		# Stop when relative change in clusters is small (in Frobenius norm)
-		# print(np.linalg.norm(centers - centers_prev))
+		# Stop when relative change in clusters is small
 		if np.linalg.norm(centers - centers_prev) / np.linalg.norm(centers_prev) < tol:
 			print("weighted_kmedians() converged")
 			break
