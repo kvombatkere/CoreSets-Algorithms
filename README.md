@@ -1,15 +1,15 @@
 ## Coreset Algorithms for Streaming & Clustering
 ------------------------------------------------------
-An open source Python implementation of various important coreset algorithms for dimensionality reduction and clustering. 
+A Python implementation of various Coreset algorithms for clustering and streaming. 
 
 
 ### Coreset Algorithms Implemented
 1. Median estimation
 2. k-Center Clustering
-3. Minimum Enclosing Ball
+3. Minimum Enclosing Ball (MEB)
 4. Gaussian Mixture Model (GMM)
 5. Weighted GMM
-6. Streaming Coresets
+6. Streaming Coresets (k-means/k-median)
 
 
 ### References

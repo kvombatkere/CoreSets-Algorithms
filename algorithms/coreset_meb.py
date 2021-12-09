@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import time
 
 class Coreset_MinimumEnclosingBall:
     """
@@ -17,9 +17,16 @@ class Coreset_MinimumEnclosingBall:
     """
     
     #Initialize with parameters
-    def __init__(self, x_arr, epsilon):
-        self.x_array = x_arr
+    def __init__(self, x_arr, epsilon, plot_flag=False):
+        if isinstance(x_arr, np.ndarray):
+            self.x_array = x_arr
+        else:
+            self.x_array = np.array(x_arr)
+
         self.epsilon = epsilon
+
+        self.meb_vector = []
+        self.plotFlag = plot_flag
 
 
     #Compute theta grid for data
@@ -69,23 +76,25 @@ class Coreset_MinimumEnclosingBall:
 
         return mebVec
 
+
     #Function to plot MEB and x_array
-    def plot2D_meb(self, meb_vec):
+    def plot2D_meb(self):
         x_plt = [vec[0] for vec in self.x_array]
         y_plt = [vec[1] for vec in self.x_array]
 
         plt.scatter(x_plt, y_plt, s= 0.05, label = 'Points')
 
-        meb_x = [vec[0] for vec in meb_vec if isinstance(vec, np.ndarray)]
-        meb_y = [vec[1] for vec in meb_vec if isinstance(vec, np.ndarray)]
-        plt.scatter(meb_x, meb_y, marker = '+', label = 'MEB')
+        meb_x = [vec[0] for vec in self.meb_vector if isinstance(vec, np.ndarray)]
+        meb_y = [vec[1] for vec in self.meb_vector if isinstance(vec, np.ndarray)]
 
-        title_text = 'Scatter plot: Minimum enclosing ball'
+        plt.scatter(meb_x, meb_y, color='red', marker = '+', label = 'MEB')
+
+        title_text = 'Minimum enclosing ball, epsilon = {}'.format(self.epsilon)
         plt.title(title_text, fontsize=11)
         plt.ylabel('y')
         plt.xlabel('x')
-        plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
-        plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
+        # plt.xlim([min(x_plt) - abs(0.1*min(x_plt)), max(x_plt) + 0.1*max(x_plt)])
+        # plt.ylim([min(y_plt) - abs(0.1*min(y_plt)), max(y_plt) + 0.1*max(y_plt)])
 
         plt.legend(loc='lower right', fontsize=9)
         plt.rcParams["figure.figsize"] = (8,8)
@@ -93,16 +102,25 @@ class Coreset_MinimumEnclosingBall:
 
         return None
 
+
     #Compute Minimum Enclosing ball
     def compute_minimumEnclosingBall(self):
-        meb_vector = []
+        startTime = time.perf_counter()
 
         #Compute theta grid
         self.compute_thetaGrid()
 
         for vec_i in self.thetaAngles:
             mebVec_i = self.compute_mebAngle_vector(vec_i)
-            meb_vector.append(mebVec_i)
+            self.meb_vector.append(mebVec_i)
 
-        return meb_vector
+        print("Computed Minimum Enclosing Ball of size = {}".format(len(self.meb_vector)))
 
+        if self.plotFlag:
+            self.plot2D_meb()
+
+        runTime = time.perf_counter() - startTime
+        print("Minimum Enclosing Ball computation time = {:.1f} seconds".format(runTime))
+
+        return 
+        
