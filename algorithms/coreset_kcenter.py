@@ -63,7 +63,7 @@ class Coreset_kCenter:
         plt.scatter(c_x, c_y, marker = '*', color = 'black', label = 'K-Centers')
 
 
-        title_text = 'k-Center Coreset for k={}, epsilon={}, n={}'.format(self.k, self.epsilon, self.x_array.shape[0])
+        title_text = 'k-Center Coreset (size={}) for k={}, epsilon={}, n={}'.format(len(self.coreSet_array),self.k, self.epsilon, self.x_array.shape[0])
         plt.title(title_text, fontsize=11)
         plt.ylabel('y')
         plt.xlabel('x')

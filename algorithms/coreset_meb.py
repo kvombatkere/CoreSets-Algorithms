@@ -18,7 +18,11 @@ class Coreset_MinimumEnclosingBall:
     
     #Initialize with parameters
     def __init__(self, x_arr, epsilon, plot_flag=False):
-        self.x_array = x_arr
+        if isinstance(x_arr, np.ndarray):
+            self.x_array = x_arr
+        else:
+            self.x_array = np.array(x_arr)
+
         self.epsilon = epsilon
 
         self.meb_vector = []
@@ -82,14 +86,15 @@ class Coreset_MinimumEnclosingBall:
 
         meb_x = [vec[0] for vec in self.meb_vector if isinstance(vec, np.ndarray)]
         meb_y = [vec[1] for vec in self.meb_vector if isinstance(vec, np.ndarray)]
-        plt.scatter(meb_x, meb_y, marker = '+', label = 'MEB')
 
-        title_text = 'Scatter plot: Minimum enclosing ball'
+        plt.scatter(meb_x, meb_y, color='red', marker = '+', label = 'MEB')
+
+        title_text = 'Minimum enclosing ball, epsilon = {}'.format(self.epsilon)
         plt.title(title_text, fontsize=11)
         plt.ylabel('y')
         plt.xlabel('x')
-        plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
-        plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
+        # plt.xlim([min(x_plt) - abs(0.1*min(x_plt)), max(x_plt) + 0.1*max(x_plt)])
+        # plt.ylim([min(y_plt) - abs(0.1*min(y_plt)), max(y_plt) + 0.1*max(y_plt)])
 
         plt.legend(loc='lower right', fontsize=9)
         plt.rcParams["figure.figsize"] = (8,8)
