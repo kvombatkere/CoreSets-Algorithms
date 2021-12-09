@@ -81,19 +81,20 @@ class Coreset_Streaming:
 
     def build_coreset(self):
         """ Builds a coreset.
-            This function can be run multiple times without messing up the coreset.
+            This function is idempotent.
         """
         self.snap_points_to_grid()
         self.build_coreset_from_grid()
         if len(self.coreset) > self.max_size:
             self.double_resolution()
 
-    def double_resolution(self):
+    def double_resolution(self, verbose=False):
         """ Doubles the resolution of the grid i.e. if the box was 2x2 previously
             (in 2D) then it becomes 4x4.
         """
-        print("Doubling resolution rank from {} to {}".format(self.resolution,
-                                                              self.resolution+1))
+        if verbose:
+            print("Doubling resolution rank from {} to {}".format(self.resolution,
+                                                                  self.resolution+1))
         self.resolution += 1
         self.side_length *= 2
         self.build_coreset()
