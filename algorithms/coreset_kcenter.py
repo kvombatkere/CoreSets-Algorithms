@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import helper_functions as hf
 import time, random
 
-
 class Coreset_kCenter:
     """
     Class to compute K-Center Coreset
