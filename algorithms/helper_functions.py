@@ -52,35 +52,6 @@ def cluster_cost(x_arr, B):
 	return np.sum([dist_set(x, B)**2 for x in x_arr])
 
 
-def max_distance(x_arr, C):
-	# Returns the farthest point in x_arr from C
-	#
-	# Args:
-	#	x_arr: array of points in R^d
-	#	C: Array of centers chosen in R^d
-	#
-	# Returns:
-	#	Point (array) farthest from C
-
-	max_dist = 0
-	max_point = None
-
-	for p in x_arr:
-		
-		total_center_distance = 0
-		for c in C:
-			
-			distance_val_c = dist(p,c)
-			total_center_distance += distance_val_c
-
-		if total_center_distance > max_dist:
-			max_dist = total_center_distance
-			max_point = p
-
-	#print(max_dist, max_point)
-	return max_point
-
-
 # ------------------------------------------------------------------------
 # k-means Functions
 # ------------------------------------------------------------------------
@@ -245,7 +216,7 @@ def simulate_gaussian_clusters(rng, n, k, means, covs):
 # ------------------------------------------------------------------------
 
 
-def scatter_2D(x_arr_list, ax = None, title = None):
+def scatter_2D(x_arr_list, ax = None, title = None, s = None):
 	# Generate scatter plot of points if 'x_arr' has dimension 1 or 2. 
 	#
 	# Args:
@@ -254,11 +225,17 @@ def scatter_2D(x_arr_list, ax = None, title = None):
 	#				Each element is treated as a different set of data to be plotted on the same plot. 
 	#	ax: pyplot axis object. If None, creates new axis, otherwise appends 
 	#		to existing axis. 
+	#	title: passed to matplotlib.pyplot.title. 
+	#	s: see argument 's' to matplotlib.pyplot.scatter. This is a list of arguments that corresponds to the 
+	#	   respective elements of "x_arr_list". That is, s[i] is the 's' argument that will be passed to 'scatter()'
+	#	   with the data "x_arr_list[i]". If None, no 's' argument will be passed. If 's' is only needed for one of 
+	#	   the datasets, arguments of the form s == [None, None, s1, None] may be passed.  
 	#
 	# Returns:
 	#	pyplot axis containing the plot. 	
 
-	for x_arr in x_arr_list: 
+	for i in range(len(x_arr_list)): 
+		x_arr = x_arr_list[i]
 		d = x_arr.shape[1]
 
 		if d > 2: 
@@ -274,7 +251,11 @@ def scatter_2D(x_arr_list, ax = None, title = None):
 
 			if ax is None:
 				f, ax = plt.subplots()	
-			ax.scatter(x, y)
+
+			if s is None:
+				ax.scatter(x, y)
+			else: 	
+				ax.scatter(x, y, s = s[i])
 
 	# Add title
 	if title is not None:
