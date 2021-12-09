@@ -1,5 +1,5 @@
 # weighted_gmm.py
-# Class implementation for Gaussian Mixture Model (GMM), generlized to allow weighted input data. 
+# Class implementation for Gaussian Mixture Model (GMM), generalized to allow weighted input data. 
 #
 # Andrew Roberts
 
@@ -10,18 +10,47 @@ import numpy as np
 import warnings
 
 class Weighted_GMM: 
+	"""
+	Class to fit a GMM model on weighted input data via a modified EM algorithm that accounts 
+	for the point weights. 
+	----------
+	rng: numpy random number generator object. 
+	k: int, the number of Gaussians in the mixture (i.e. number of "clusters"). 
+	prior_threshold: float, a small number that is added to each diagonal entry of the covariance 
+					 matrices to prevent singular matrices. 
+	----------
+
+	References: 
+	Mario Lucic, Matthew Faulkner, Andreas Krause, and Dan Feldman. "Training Gaussian Mixture 
+	Models at Scale via Coresets." Journal of Machine Learning Research. 2018."
+	"""
 
 	def __init__(self, rng, k, prior_threshold): 
 		self.rng = rng
 		self.k = k
 		self.prior_threshold = prior_threshold
-		self.x_arr = None
-		self.n = None 
-		self.w_clusters = None
-		self.means = None
-		self.covs = None
 
 	def fit(self, x_arr, w_points = None, centers_init = 'kmeans', tol = 1e-8, max_itr = 10000):
+		# Estimate the parameter values of a weighted GMM model (i.e. GMM that takes point weights into 
+		# account) via a weighted generalization of the EM algorithm. 
+		#
+		# Args: 
+		#	x_arr: numpy array of shape (# observations, # features). 
+		#   w_points: numpy array of shape '# observations'; the point weights.
+		#	centers_init: Determines the initialization of the parameter values for the first iteration 
+		#			      of the EM algorithm. If 'kmeans' initialization is determined by running a weighted
+		#				  version of kmeans. If 'uniform_subsample', initializes the k centers by randomly 
+		#				  sampling from 'x_arr'. Otherwise, must be a numpy array of shape (k, # features), 
+		#				  in which case this array is used as the initial Gaussian means. 
+		#	tol: float, the EM algorithm will terminate when the negative log-likelihood decreases by less than 
+		#		 'tol' or 'max_iter' iterations are reached. 
+		#	max_itr: integer, see 'tol' above. 
+		#
+		# Returns:
+		#	3-tuple containing: 
+		#		- mixture weights: numpy array of shape k. 
+		#		- means: numpy array of shape (k, # features).
+		#		- covariance matrices: numpy array of shape (k, # features, # features)
 
 		# For univariate data, convert to # observations x 1 array
 		if len(x_arr.shape) == 1:
@@ -32,10 +61,7 @@ class Weighted_GMM:
 			w_points = np.ones(shape = x_arr.shape[0])
 		w_points = np.array(w_points) / np.sum(w_points)
 
-		# Store data attributes
 		n = x_arr.shape[0]
-		self.n = n
-		self.x_arr = x_arr
 
 		# Initialize matrix of cluster responsibilities; R_ij = p(point i in cluster j|x_i, mean_j, cov_j)
 		# Initial values come from kmeans "hard clustering"; all probability mass assigned to one cluster for each point.
@@ -87,11 +113,6 @@ class Weighted_GMM:
 		if not converged:
 			warnings.warn("Weighted GMM did not converge")
 
-		# Store current parameter values
-		self.w_clusters = w_clusters
-		self.means = means
-		self.covs = covs
-
 		return (w_clusters, means, covs)
 			
 
@@ -130,51 +151,6 @@ class Weighted_GMM:
 		return (w_clusters, means, covs)
 
 	
-	def maximization2(self, x_arr, R):
-		n = x_arr.shape[0]
-		d = x_arr.shape[1]
-
-		z = np.zeros(shape = self.k)
-		means = np.zeros(shape = (self.k, d))
-		covs = np.zeros(shape = (self.k, d, d))
-		w_clusters = np.zeros(shape = self.k)
-
-		for j in range(self.k):
-			for i in range(n):
-				z[j] = z[j] + R[i, j]
-				means[j] = means[j] + R[i, j] * x_arr[i]
-				covs[j] = covs[j] + (R[i, j] * np.outer(x_arr[i], x_arr[i]))
-			
-			means[j] = means[j] / z[j]
-			covs[j] = (covs[j] / z[j]) - np.outer(means[j], means[j]) + np.diag(np.ones(d) * self.prior_threshold)
-	
-		# Normalize weights
-		w_clusters = z / np.linalg.norm(z, ord = 1)
-
-		return (w_clusters, means, covs)
-
-
-	def expectation2(self, x_arr, w_points, w_clusters, means, covs):
-		n = x_arr.shape[0]
-		R = np.zeros(shape = (n, self.k))	
-		z = np.zeros(shape = n)
-	
-		for i in range(n):
-			for j in range(self.k):
-				R[i, j] = w_clusters[j] * multivariate_normal(means[j], covs[j]).pdf(x_arr[i])
-				if R[i, j] == 0:
-					R[i, j] = 1e-16
-
-				z[i] = z[i] + R[i, j]
-
-		# Normalize and weight by points weights
-		for i in range(n):
-			for j in range(self.k):
-				R[i, j] = w_points[i] * R[i, j] / z[i]
-
-		return R
-
-
 	def expectation(self, x_arr, w_points, w_clusters, means, covs):
 		# Performs the standard "expectation" step for EM for GMMs. Computes the "responsibility" matrix
 		# R, where r_ij is the responsibility cluster j has for observation i. The only deviation from the 
@@ -217,23 +193,40 @@ class Weighted_GMM:
 		return R, P
 
 	def neg_log_likelihood(self, w_points, w_clusters, P):
-		# This function is defined to conveniently work with the EM algorithm loop. For a more general 
+		# Computes the negative log likelihood of a GMM model, given the parameters and data. 
+		# This function is defined to conveniently work with the EM algorithm loop as a backend method. For a more general 
 		# function that calculates the log-liklihood, see 'evaluate_log_likelihood()'. 
+		#
+		# Args:
+		#	w_points: numpy array of shape '# observations', the point weights. If None, uses uniform weights. 
+		#	w_clusters: numpy array of shape k. The mixture weights. 
+		#	P: numpy array of shape (# observations, k), where the entry p_ij := p(x_i|mean_j, cov_j), where p(.) denotes the 
+		#	   multivariate normal density. 
+		#
+		# Returns:
+		#	float, the negative of the log-likelihood function. 
+
 		log_likelihood = np.sum([w_points[i] * np.log(np.max([w_clusters.dot(P[i, :]), 1e-16])) for i in range(len(w_points))])
 	
 		return -1 * log_likelihood
 
-	def evaluate_log_likelihood(self, x_arr = None, w_clusters = None, means = None, covs = None):
+	def evaluate_log_likelihood(self, x_arr, w_clusters, means, covs, w_points = None):
+		# Given data and the parameter values, computes the log-likelihood of the GMM model. 
+		#
+		# Args:
+		#	x_arr: numpy array of shape (# observations, # features). 
+		#	w_clusters: numpy array of shape k. The mixture weights. 
+		#	means: numpy array of shape (k, # features). The Gaussian means. 
+		#	covs: numpy array of shape (k, # features, # features). The Gaussian covariance matrices. 
+		#	w_points: numpy array of shape '# observations', the point weights. If None, uses uniform weights. 
+		# 
+		# Returns:
+		#	float, the log-likelihood given the input data and parameter values. 
 
-		# If args are not provided, defaults to class attributes
-		if x_arr is None:
-			x_arr = self.x_arr
-		if w_clusters is None: 
-			w_clusters = self.w_clusters
-		if means is None:
-			means = self.means
-		if covs is None:
-			covs = self.covs
+		# If not provided, uniform weights are used.
+		if w_points is None:
+			w_points = np.ones(shape = x_arr.shape[0])
+		w_points = np.array(w_points) / np.sum(w_points)
 
 		log_likelihood = 0
 
@@ -242,7 +235,7 @@ class Weighted_GMM:
 			for j in range(x_arr.shape[1]):
 				x_i_contribution = x_i_contribution + (w_clusters[j] * multivariate_normal(means[j], covs[j]).pdf(x_arr[i]))
 			
-			log_likelihood = log_likelihood + np.log(x_i_contribution)
+			log_likelihood = log_likelihood + w_points[i] + np.log(x_i_contribution)
 
 		return log_likelihood
 

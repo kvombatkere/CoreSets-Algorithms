@@ -3,6 +3,8 @@
 # estimation in Gaussian Mixture Models. 
 #
 # Andrew Roberts
+#
+# Working Directory: CoreSets-Algorithms/test
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -31,7 +33,6 @@ means1 = [[5, 5], [-5, -5], [0, 0]]
 covs1 = [np.array([[1, 0], [0, 1]]), np.array([[1, 0], [0, 1]]), np.array([[7, 0], [0, 1]])]
 arr1 = hf.simulate_gaussian_clusters(rng, [3000, 2000, 5000], 3, means1, covs1)
 
-'''
 
 #
 # Test GMM data simulation
@@ -136,7 +137,6 @@ centers = hf.weighted_kmeans(arr1, k, rng, w = w, centers_init = 'kmeans++')
 ax = hf.scatter_2D([arr1, centers], title = 'Weighted kmeans: Weights Proportional to Within-Cluster Variance Contribution')
 plt.show()
 
-'''
 
 #
 # Test Weighted GMM 
@@ -174,7 +174,6 @@ print('\nCovariances:')
 for cov in c:
 	print(cov)
 
-'''
 #
 # EM Algorithm Test: Simple Test 
 #
@@ -193,7 +192,6 @@ print(w_clusters)
 print(means)
 print(covs)
 
-'''
 
 
 

@@ -150,7 +150,6 @@ prior_threshold = .001
 # Instantiate Weighted GMM object
 gmm_model = wgmm.Weighted_GMM(rng, k, prior_threshold)
 
-'''
 # Fit GMM model on all data
 print("\n\nFitting GMM on Entire Dataset")
 t0 = time.time()
@@ -160,11 +159,10 @@ print("Time in fit() method:", t1 - t0)
 
 
 # Evaluate log likelihood
-L_all = gmm_model.evaluate_log_likelihood()
+L_all = gmm_model.evaluate_log_likelihood(arr, w_all, means_all, covs_all)
 print("Log Likelihood, All Data:", L_all)
 
 
-'''
 
 # -------------------
 # Fit GMM on coreset
@@ -187,7 +185,7 @@ print("Coreset Covs:")
 print(covs_C)
 
 # Evaluate log likelihood
-L_coreset = gmm_model.evaluate_log_likelihood(x_arr = arr)
+L_coreset = gmm_model.evaluate_log_likelihood(arr, w_C, means_C, covs_C)
 print("Log Likelihood, Coreset:", L_coreset)
 
 # -----------------------------
@@ -218,13 +216,13 @@ print("Uniform Subsample Covs:")
 print(covs_uniform)
 
 # Evaluate log likelihood
-L_uniform = gmm_model.evaluate_log_likelihood(x_arr = arr)
+L_uniform = gmm_model.evaluate_log_likelihood(arr, w_uniform, means_uniform, covs_uniform)
 print("Log Likelihood, Uniform Subsampling:", L_uniform)
 
 
-# ---------------------------
-# Compare the three GMM fits
-# ---------------------------
+# ------------------------------
+# Compare the different GMM fits
+# ------------------------------
 
 # Data generated via coreset estimates
 arr_coreset_generated = hf.simulate_gmm_data(rng, N, k, means_C, covs_C, w_C)
