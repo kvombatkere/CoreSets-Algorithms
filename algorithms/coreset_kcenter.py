@@ -23,12 +23,11 @@ class Coreset_kCenter:
     """
     
     #Initialize with parameters
-    def __init__(self, x_arr, k_val, epsilon):
+    def __init__(self, x_arr, k_val, epsilon, plot_flag=False):
         if isinstance(x_arr, np.ndarray):
             self.x_array = x_arr
         else:
             self.x_array = np.array(x_arr)
-
 
         self.k = k_val
         self.epsilon = epsilon
@@ -40,6 +39,8 @@ class Coreset_kCenter:
 
         self.gridpoints = {}
         self.coreSet_array = []
+
+        self.plotFlag = plot_flag
 
 
     #Function to plot Coreset and x_array
@@ -66,8 +67,8 @@ class Coreset_kCenter:
         plt.title(title_text, fontsize=11)
         plt.ylabel('y')
         plt.xlabel('x')
-        plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
-        plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
+        #plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
+        #plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
 
         plt.legend(loc='lower right', fontsize=9)
         plt.rcParams["figure.figsize"] = (8,8)
@@ -100,8 +101,10 @@ class Coreset_kCenter:
         
         #Get the cost, R
         self.R_val = max(point_distances)
+        print("Cost (max) of k-center clustering={:.1f}".format(self.R_val))
 
         return 
+
 
     #Snap points to grid - in d dimensions
     def snap_point_to_grid(self, point):
@@ -133,11 +136,11 @@ class Coreset_kCenter:
             print("Greedy k-centers not computed yet. Compute first and then try")
             return None
 
-        print("Epsilon = {}, R_Cost = {}, Dimensions = {}".format(self.epsilon, self.R_val, self.dims))
+        #print("Epsilon = {}, R_Cost = {}, Dimensions = {}".format(self.epsilon, self.R_val, self.dims))
         
         #Side length of d-dimensional grid
         self.side_length = (self.epsilon*self.R_val)/(5*self.dims)
-        print("d-dimensional grid side_length = ", self.side_length)
+        #print("d-dimensional grid side_length = ", self.side_length)
         
         #Snap all points to d-dimensional grid
         for p in self.x_array:
@@ -157,8 +160,6 @@ class Coreset_kCenter:
         return
 
 
-
-
     #Compute the k,epsilon center coreset
     def compute_kCenter_Coreset(self):
         startTime = time.perf_counter()
@@ -171,13 +172,15 @@ class Coreset_kCenter:
 
         self.create_kcoreset_from_grid()
 
-        self.plot2D_coreset()
+        if self.plotFlag:
+            self.plot2D_coreset()
 
-        print("----------------------------------------------------------------------------------------------")
         print("Generated (k,epsilon) Center Coreset of size={} on Input dimensions={}".format(len(self.coreSet_array), self.x_array.shape))
         
         runTime = time.perf_counter() - startTime
         print("Coreset computation time = {:.1f} seconds".format(runTime))
+
+        print("----------------------------------------------------------------------------------------------")
 
         return self.coreSet_array
     
