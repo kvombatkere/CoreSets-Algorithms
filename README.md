@@ -1,24 +1,23 @@
 ## Coreset Algorithms for Streaming & Clustering
 ------------------------------------------------------
-A Python implementation of various Coreset algorithms for clustering and streaming.
-
-![coreset_img_1](presentation/plots/meb_1gaussian.png) ![coreset_img_2](presentation/plots/userLocs.png)
-
-
-### Coreset Algorithms Implemented
-------------------------------------------------------
-1. Median estimation
+Python implementation of various Coreset algorithms for clustering and streaming. The code in this repository can be used to generate Coresets for the following use-cases:
+1. Median Estimation
 2. k-Center Clustering
 3. Minimum Enclosing Ball (MEB)
 4. Gaussian Mixture Model (GMM)
 5. Weighted GMM
 6. Streaming Coresets (k-means/k-median)
 
+<img src="presentation/plots/meb_1gaussian.png" width="400" height="400" /> <img src="presentation/plots/userLocs.png" width="400" height="400" />
 
 ### Implementation details and Running Code:
 ------------------------------------------------------
 ***k-center Clustering***
-The `Coreset_kCenter` class in ```coreset_kcenter.py``` contains the implementation of an epsilon-additive k-center clustering coresest algorithm.
+The `Coreset_kCenter` class in ```algorithms/coreset_kcenter.py``` contains the implementation of an epsilon-additive k-center clustering coresest algorithm.
+
+
+***Gaussian Mixture Models***
+
 
 ***Streaming Algorithms***
 
