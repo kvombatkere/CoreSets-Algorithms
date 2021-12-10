@@ -1,4 +1,4 @@
-## Coreset - Minimum Enclosing Ball
+## Coreset Implementation - Minimum Enclosing Ball
 ## Karan Vombatkere, Dec 2021
 
 import numpy as np

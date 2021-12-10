@@ -1,4 +1,4 @@
-## K-Center Coreset
+## k-Center Coreset Implementation
 ## Karan Vombatkere, Dec 2021
 
 import numpy as np
@@ -133,7 +133,6 @@ class Coreset_kCenter:
             self.gridpoints[grid_loc].append(point)
 
         return
-    
 
 
     #Compute d-dimensinsional grid
