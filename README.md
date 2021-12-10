@@ -47,6 +47,8 @@ The file ```presentation/gmm_coreset_analysis.py``` contains an example analysis
 
 The file ```gmm_test.py``` contains further examples of how to use `Coreset_GMM`, `Weighted_GMM`, and the functions in ```helper_functions.py```. It contains simple tests evaluating the various algorithms. 
 
+<img src="presentation/plots/gmm_coreset_rng_2.png" width="350" height="300" /> <img src="presentation/plots/gmm_subsample_rng_2.png" width="350" height="300" />
+
 ***Streaming Algorithms***
 
 K-means and K-medians algorithms have been implemented. The class that handles these algorithms is in `Coreset_Streaming` in  ```algorithms/coreset_streaming.py```.
