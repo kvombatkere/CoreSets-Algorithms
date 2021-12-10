@@ -61,7 +61,7 @@ class Coreset_kCenter:
         if not coreset_plot_flag:
             c_x = [vec[0] for vec in  self.coreSet_array]
             c_y = [vec[1] for vec in  self.coreSet_array]
-            plt.scatter(c_x, c_y, s=2.5, marker = '+', label = 'CoreSet')
+            plt.scatter(c_x, c_y, s=2, marker = '+', label = 'CoreSet')
 
         c_x = [vec[0] for vec in self.centers]
         c_y = [vec[1] for vec in self.centers]
@@ -70,8 +70,8 @@ class Coreset_kCenter:
 
         title_text = 'k-Center Coreset (size={}) for k={}, epsilon={}, n={}'.format(len(self.coreSet_array),self.k, self.epsilon, self.x_array.shape[0])
         plt.title(title_text, fontsize=11)
-        plt.ylabel('Longitude (deg E)')
-        plt.xlabel('Latitude (deg N)')
+        plt.xlabel('x')
+        plt.ylabel('y')
         #plt.xlim([min(x_plt) - 0.02*min(x_plt), max(x_plt) + 0.02*max(x_plt)])
         #plt.ylim([min(y_plt) - 0.02*min(y_plt), max(y_plt) + 0.02*max(y_plt)])
 
