@@ -43,9 +43,9 @@ The `Weighted_GMM` class in ```algorithms/coreset_gmm.py``` contains the impleme
 
 The file ```algorithms/helper_functions.py``` contains a variety of functions that are leveraged in the `Coreset_GMM` and `Weighted_GMM` classes. In particular, this file contains functions implementing distance metrics, weighted k-means, k-means++, GMM data simulation, and scatter plots. 
 
-The file ```presentation/gmm_coreset_analysis.py``` contains an example analysis of the GMM coresets using the `Coreset_GMM` and `Weighted_GMM` classes. This file also leverages the functions in ```helper_functions.py``` so simulate artificial data sampled from a GMM. In general, this is a good starting point to learn how to use the GMM coreset functionality. The plots shown below were produced using this script. 
+The file ```presentation/gmm_coreset_analysis.py``` contains an example analysis of the GMM coresets using the `Coreset_GMM` and `Weighted_GMM` classes. This file also leverages the functions in ```helper_functions.py``` to simulate artificial data sampled from a GMM. In general, this is a good starting point to learn how to use the GMM coreset functionality. The plots shown below were produced using this script. 
 
-The file ```gmm_test.py``` contains further examples of how to use `Coreset_GMM`, `Weighted_GMM`, and the functions in ```helper_functions.py```. It contains simple tests testing the various algorithms. 
+The file ```gmm_test.py``` contains further examples of how to use `Coreset_GMM`, `Weighted_GMM`, and the functions in ```helper_functions.py```. It contains simple tests evaluating the various algorithms. 
 
 ***Streaming Algorithms***
 
