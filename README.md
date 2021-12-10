@@ -2,8 +2,8 @@
 ------------------------------------------------------
 Python implementation of various Coreset algorithms for clustering and streaming. The code in this repository can be used to generate Coresets for the following use-cases. 
 1. Median Estimation
-2. k-Center Clustering
-3. Minimum Enclosing Ball (MEB)
+2. Minimum Enclosing Ball (MEB)
+3. k-Center Clustering
 4. Gaussian Mixture Model (GMM)
 5. Weighted GMM
 6. Streaming Coresets (k-means/k-median)
