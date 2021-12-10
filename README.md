@@ -37,7 +37,15 @@ The ```notebooks/kcenter_meb_test.ipynb``` notebook contains code to test the im
 
 ***Gaussian Mixture Models***
 
+The `Coreset_GMM` class in ```algorithms/coreset_gmm.py``` contains the implementation of the GMM coreset construction algorithm outlined in Lucic et al (2018). The class supports d-dimensional data. The primary method `generate_coreset()` returns a tuple containing the GMM coreset, the first element being the sampled points with the second containing the associated coreset weights. 
 
+The `Weighted_GMM` class in ```algorithms/coreset_gmm.py``` contains the implementation of a generalization of the standard GMM model that applies to weighted input points. In particular, the `fit()` method executes a modified version of the EM algorithm that takes into account the point weights. The standard EM algorithm can easily be recovered by not specifying a weight argument. However, the addition of the weighted option allows one to fit a GMM model on a coreset produced by `Coreset_GMM`. 
+
+The file ```algorithms/helper_functions.py``` contains a variety of functions that are leveraged in the `Coreset_GMM` and `Weighted_GMM` classes. In particular, this file contains functions implementing distance metrics, weighted k-means, k-means++, GMM data simulation, and scatter plots. 
+
+The file ```presentation/gmm_coreset_analysis.py``` contains an example analysis of the GMM coresets using the `Coreset_GMM` and `Weighted_GMM` classes. This file also leverages the functions in ```helper_functions.py``` so simulate artificial data sampled from a GMM. In general, this is a good starting point to learn how to use the GMM coreset functionality. The plots shown below were produced using this script. 
+
+The file ```gmm_test.py``` contains further examples of how to use `Coreset_GMM`, `Weighted_GMM`, and the functions in ```helper_functions.py```. It contains simple tests testing the various algorithms. 
 
 ***Streaming Algorithms***
 
@@ -55,6 +63,7 @@ A demonstration can be seen through the `get_true_and_coreest_kmeans_centers()` 
 1. Pankaj K. Agarwal, , Sariel Har-Peled, and Kasturi R. Varadarajan. "Geometric approximation via coresets." Combinatorial and computational geometry 52.1-30 (2005): 3.
 2. Feldman, Dan, Matthew Faulkner, and Andreas Krause. "Scalable Training of Mixture Models via Coresets." NIPS. 2011.
 3. Sariel Har-Peled, and Soham Mazumdar. "On coresets for k-means and k-median clustering." Proceedings of the thirty-sixth annual ACM symposium on Theory of computing. 2004.
+4. Mario Lucic, Matthew Faulkner, Andreas Krause, and Dan Feldman. “Training Gaussian Mixture Models at Scale via Coresets.” Journal of Machine Learning Research. 2018. 
 
 ------------------------------------------------------
 #### CS 543: Algorithms for Big Data (Boston University, Dec 2021)
