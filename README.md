@@ -16,7 +16,7 @@ Note that all algorithms use the following standard Python libraries: numpy, pan
 ------------------------------------------------------
 ***Median Estimation***
 
-The class `Coreset_Median` in ```algorithms/coreset_median.py``` contains the implementation of an (epsilon*n) median approximation algorithm. The ```test/median_test.ipynb``` notebook contains code to test the implementation against numpy.median and generate runtime and median estimation plots (see sample plots below)
+The class `Coreset_Median` in ```algorithms/coreset_median.py``` contains the implementation of an (epsilon*n) median approximation algorithm. The ```notebooks/median_test.ipynb``` notebook contains code to test the implementation against numpy.median and generate runtime and median estimation plots (see sample plots below)
 
 <img src="presentation/plots/median_0.01.png" width="350" height="300" /> <img src="presentation/plots/median_runtime_0.01.png" width="350" height="300" />
 
@@ -30,7 +30,7 @@ The class `Coreset_MinimumEnclosingBall` in ```algorithms/coreset_meb.py``` cont
 
 The `Coreset_kCenter` class in ```algorithms/coreset_kcenter.py``` contains the implementation of an epsilon-additive k-center clustering coresest algorithm. The algorithm supports d-dimensional (d > 1) data and the `compute_kCenter_Coreset()` function can be used to run the algorithm and populate the array `self.coreSet_array` with the points in the Coreset. The function `greedy_kcenter()` computes a 2-approximation for the k-center clustering, and can be re-used to plot the k-center clustering using the coreset as input. 
 
-The ```test/kcenter_meb_test.ipynb``` notebook contains code to test the implementation and generate 2D plots for k-center coresets. The following plots show a sample k-center coreset for the Finland 2012 locations dataset (available in the `data` folder).
+The ```notebooks/kcenter_meb_test.ipynb``` notebook contains code to test the implementation and generate 2D plots for k-center coresets. The following plots show a sample k-center coreset for the Finland 2012 locations dataset (available in the `data` folder).
 
 <img src="presentation/plots/userLocs.png" width="350" height="300" /> <img src="presentation/plots/userLocs_coreset_kcenter.png" width="350" height="300" />
 
@@ -45,7 +45,7 @@ K-means and K-medians algorithms have been implemented. The class that handles t
 
 The easiest way to simulate the streaming algorithm would be to run the ```run_stream(stream, max_cs_size=1000)``` function, which returns a coreset.The algorithm returns a coreset, in the form of a list of `(point, weight)`, which can be used to run weighted k-means and k-medians on. Specifically, the functions to run k-means are ```weighted_kmeans()``` and ```weighted_kmedians``` in ```algorithms/helper_functions.py```
 
-A demonstration can be seen through the `get_true_and_coreest_kmeans_centers()` function in the ```algorithms/coreset_streaming_playbook.ipynb``` notebook. This notebook should be used for general reference for the usage of the streaming class.
+A demonstration can be seen through the `get_true_and_coreest_kmeans_centers()` function in the ```notebooks/coreset_streaming_playbook.ipynb``` notebook. This notebook should be used for general reference for the usage of the streaming class.
 
 <img src="presentation/plots/1000.png" width="350" height="300" />
 
